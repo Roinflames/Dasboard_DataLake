@@ -664,7 +664,7 @@ def mostrar_treemap_dimensiones():
             color='Categoria',  # Colorear por categoría
             color_discrete_map={
                 'Institucional': '#0A5C99',
-                'Territorial': '#FC9F0B'
+                'Territorial': '#FEC109'
             }
         )
         
