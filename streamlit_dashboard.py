@@ -17,8 +17,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        # 'About': "# PROYECTO FIU UTEM \n Dashboard creado por el equipo de integración de datos \n - Diego Santibañez, dsantibanezo@utem.cl\n - Esteban Gomez, egomez@utem.cl\n - Hugo Osses, hosses.utem.cl"
-        'About': "# PROYECTO FIU UTEM"
+         'About': "# PROYECTO FIU UTEM \n Dashboard creado por el equipo de integración de datos \n - Diego Santibañez, dsantibanezo@utem.cl\n - Esteban Gomez, egomez@utem.cl\n - Hugo Osses, hosses.utem.cl"
+        #'About': "# PROYECTO FIU UTEM"
     }
 )
 
