@@ -5,10 +5,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import os
-import mimetypes
-from datetime import datetime
-import numpy as np
-import re
+from sqlalchemy import create_engine
+
+# Crear conexión usando SQLAlchemy
+engine = create_engine('mariadb+mariadbconnector://testfiut:utem1234@localhost/mysql')
 
 # Configuración de la página
 st.set_page_config(
@@ -24,7 +24,7 @@ st.set_page_config(
 
 # Función para cargar los datos
 @st.cache_data
-def cargar_datos(ruta='estructura_archivos.csv'):
+def cargar_datos(ruta='data/estructura_archivos.csv'):
     """Carga los datos del archivo CSV o genera un DataFrame vacío si no existe"""
     try:
         df = pd.read_csv(ruta)
@@ -324,7 +324,7 @@ def crear_heatmap_extension_dimension(df):
 # Función para crear gráfico de métodos de obtención
 def crear_grafico_metodos_obtencion():
     
-    dfh=pd.read_excel('DataLake_registro_FIUT_UTEM.xlsx')
+    dfh=pd.read_excel('data/DataLake_registro_FIUT_UTEM.xlsx')
     dfh['METODO'].value_counts()
 
     dfhh={
@@ -526,7 +526,7 @@ def crear_grafico_estados_interactivo(df):
 
 # Cargar datos de indicadores
 @st.cache_data
-def cargar_indicadores(ruta='porcentajes avances.csv'):
+def cargar_indicadores(ruta='data/porcentajes avances.csv'):
     try:
         df = pd.read_csv(ruta, sep=';')
         # Renombrar columnas para mayor claridad
@@ -714,19 +714,13 @@ def mostrar_tabla_comunas():
     Carga y muestra una tabla con información de las comunas de la Región Metropolitana.
     """
     st.subheader("Comunas del proyecto - Región Metropolitana")
-    
-    # Cargar datos de comunas
-    @st.cache_data
-    def cargar_comunas(ruta='Comunas.csv'):
-        try:
-            df = pd.read_csv(ruta)
-            return df
-        except Exception as e:
-            st.error(f"Error al cargar el archivo de comunas: {str(e)}")
-            return pd.DataFrame()
+
+    querycomunas="""select cpt.nombre_comuna, cpt.nombre_provincia, cr.nombre as nombre_region from fiut.comunas_provincias_territorio cpt
+    join fiut.chile_regiones cr on cr.nombre='Metropolitana de Santiago';"""
     
     # Cargar el dataframe
-    df_comunas = cargar_comunas()
+    df_comunas = pd.read_sql(querycomunas, engine)
+
     
     if not df_comunas.empty:
         # Mostrar tabla sin el índice
@@ -962,7 +956,7 @@ def main():
             """, unsafe_allow_html=True)
             
             # Cargar el CSV de nombres de dimensiones
-            nombres_dimensiones = pd.read_csv("nombres_dimensiones.csv")
+            nombres_dimensiones = pd.read_csv("data/nombres_dimensiones.csv")
             # Crear un diccionario para mapear id a nombre
             dict_dimensiones = dict(zip(nombres_dimensiones['id_dim'], nombres_dimensiones['nombre_dim']))
 
