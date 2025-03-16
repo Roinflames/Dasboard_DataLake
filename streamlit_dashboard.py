@@ -5,10 +5,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import os
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 
-# Crear conexión usando SQLAlchemy
-engine = create_engine('mariadb+mariadbconnector://testfiut:utem1234@localhost/mysql')
+# # Crear conexión usando SQLAlchemy
+# engine = create_engine('mariadb+mariadbconnector://testfiut:utem1234@localhost/mysql')
 
 # Configuración de la página
 st.set_page_config(
