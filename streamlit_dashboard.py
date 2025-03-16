@@ -547,7 +547,7 @@ def mostrar_treemap_dimensiones():
     st.subheader("Treemap de dimensiones e indicadores")
     
     # Verificar archivos disponibles y mostrar información de depuración
-    archivos_disp = [f for f in os.listdir() if f.endswith('.csv')]
+    archivos_disp = [f for f in os.listdir('data') if f.endswith('.csv')]
     
     if not any(f.lower() in ['institucional.csv', 'territorial.csv'] for f in archivos_disp):
         st.error("No se encontraron los archivos necesarios: Institucional.csv y territorial.csv")
