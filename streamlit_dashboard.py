@@ -339,13 +339,6 @@ def crear_grafico_metodos_obtencion():
     dfhh['nombres'][0]= 'Web Scrapping'
     dfhh['nombres'][1]= 'Universidad'
     dfhh['nombres'][2]= 'Descargados'
-
-    # Datos de ejemplo (si tienes los reales, deberías usarlos)
-    metodos = {
-        'Web Scraping': 45,
-        'Universidad': 32,
-        'Descargados': 23
-    }
     
     fig=px.pie(
     dfhh, 
@@ -585,8 +578,8 @@ def mostrar_treemap_dimensiones():
             return None
     
     # Cargar los dataframes
-    institucional_df = cargar_csv_seguro('Institucional.csv')
-    territorial_df = cargar_csv_seguro('territorial.csv')
+    institucional_df = cargar_csv_seguro('data/Institucional.csv')
+    territorial_df = cargar_csv_seguro('data/territorial.csv')
     
     # Verificar si se cargaron los datos
     if institucional_df is None or territorial_df is None:
