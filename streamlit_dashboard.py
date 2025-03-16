@@ -712,7 +712,8 @@ def mostrar_tabla_comunas():
     join fiut.chile_regiones cr on cr.nombre='Metropolitana de Santiago';"""
     
     # Cargar el dataframe
-    df_comunas = pd.read_sql(querycomunas, engine)
+    # df_comunas = pd.read_sql(querycomunas, engine)
+    df_comunas = pd.read_csv('data/Comunas.csv')
 
     
     if not df_comunas.empty:
