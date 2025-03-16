@@ -339,13 +339,6 @@ def crear_grafico_metodos_obtencion():
     dfhh['nombres'][0]= 'Web Scrapping'
     dfhh['nombres'][1]= 'Universidad'
     dfhh['nombres'][2]= 'Descargados'
-
-    # Datos de ejemplo (si tienes los reales, deberías usarlos)
-    metodos = {
-        'Web Scraping': 45,
-        'Universidad': 32,
-        'Descargados': 23
-    }
     
     fig=px.pie(
     dfhh, 
@@ -554,7 +547,7 @@ def mostrar_treemap_dimensiones():
     st.subheader("Treemap de dimensiones e indicadores")
     
     # Verificar archivos disponibles y mostrar información de depuración
-    archivos_disp = [f for f in os.listdir() if f.endswith('.csv')]
+    archivos_disp = [f for f in os.listdir('data') if f.endswith('.csv')]
     
     if not any(f.lower() in ['institucional.csv', 'territorial.csv'] for f in archivos_disp):
         st.error("No se encontraron los archivos necesarios: Institucional.csv y territorial.csv")
@@ -585,8 +578,8 @@ def mostrar_treemap_dimensiones():
             return None
     
     # Cargar los dataframes
-    institucional_df = cargar_csv_seguro('Institucional.csv')
-    territorial_df = cargar_csv_seguro('territorial.csv')
+    institucional_df = cargar_csv_seguro('data/Institucional.csv')
+    territorial_df = cargar_csv_seguro('data/territorial.csv')
     
     # Verificar si se cargaron los datos
     if institucional_df is None or territorial_df is None:
