@@ -573,7 +573,6 @@ def cargar_indicadores(ruta='data/porcentajes_avance.csv'):
 
 # Usar la función en tu aplicación
 df_indicadores = cargar_indicadores()
-print(df_indicadores)
 
 # Función para crear y mostrar el treemap de dimensiones e indicadores
 def mostrar_treemap_dimensiones():

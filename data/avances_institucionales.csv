@@ -9,7 +9,7 @@ I_7^Dimensión 2: Infraestructura y equipamiento^Catastro de equipamiento cient�
 I_8^Dimensión 2: Infraestructura y equipamiento^Costo Presupuestario a nivel institucional para la compra de equipamiento científico-Tecnológico/Costo Real ejecutado.^EN PROCESO
 I_9^Dimensión 3: Programas de postgrado y claustros académicos.^N° y porcentaje de Programas Acreditados^LISTO
 I_10^Dimensión 3: Programas de postgrado y claustros académicos.^Porcentaje de cobertura de programas por área de conocimiento.^LISTO
-I_11^Dimensión 3: Programas de postgrado y claustros académicos.^N° de tesis de postgrado que contribuyen al desarrollo local a través de convenios A+S con organismos públicos.^LISTO
+I_11^Dimensión 3: Programas de postgrado y claustros académicos.^Nº de tesis de postgrado que contribuyen al desarrollo local a través de convenios A+S con organismos públicos.^LISTO
 I_12^Dimensión 3: Programas de postgrado y claustros académicos.^N° de claustros académicos de programas de postgrado acreditados y no acreditados.^LISTO
 I_13^Dimensión 3: Programas de postgrado y claustros académicos.^N° de tesis de doctorado con financiamiento de empresas, becas ANID, por año.^EN PROCESO
 I_14^Dimensión 4: Líneas de investigación y capital humano avanzado.^N° de investigadores activos por publicaciones, tipo de proyectos, por área de conocimiento, por líneas de investigación.^LISTO
@@ -26,12 +26,12 @@ I_24^Dimensión 5: Colaboración Internacional^N° de convenio internacionales i
 I_25^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia^N° y porcentaje de estudiantes participando en proyectos o acciones de vinculación en innovación, transferencia y emprendimiento.^PENDIENTE
 I_26^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia^Porcentaje de tesis de pregrado y postgrado que cumplen entre 1 y 3 ODS.^EN PROCESO
 I_27^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia^N° de marcas de tecnologías y propias UTEM anual.^LISTO
-I_28^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia^N° de Contratos tecnológicos con empresas nacionales, internacionales por año.^LISTO
-I_29^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia^N° de solicitudes de patentes/ modelos utilidad versus N° de patentes concedidas/ modelos utilidad concedidos en Chile, internacional.^LISTO
+I_28^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia^Nº de Contratos tecnológicos con empresas nacionales, internacionales por año.^LISTO
+I_29^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia^Nº de solicitudes de patentes/ modelos utilidad versus Nº de patentes concedidas/ modelos utilidad concedidos en Chile, internacional.^LISTO
 I_30^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^Porcentaje de proyectos de investigación de interés público.^EN PROCESO
 I_31^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^N° de redes nacionales con participación activa.^EN PROCESO
 I_32^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^N° de seminarios o talleres realizados con actores externos a la institución en I+D+ i +e.^PENDIENTE
-I_33^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^N° Pasantía e intercambios internacionales (estudiantes y academicos).^PENDIENTE
+I_33^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^N° Pasantía e intercambios internacionales (estudiantes y académicos).^PENDIENTE
 I_34^Dimensión 1: Modelo de Gestión, Costos, Datos, Gobernanza y Normativas^Monto total anual asignado en incentivos a publicaciones^PENDIENTE
 I_35^Dimensión 2: Infraestructura y equipamiento.^N° de espacios Cowork por campus / Porcentaje de Infraestructura para desarrollo de Cowork por campus. (m2 de espacio disponible para Cowork de estudiantes y egresados Programas de Vinculación y Transferencia)^EN PROCESO
 I_36^Dimensión 2: Infraestructura y equipamiento.^N° de horas anuales de uso de equipos computacionales de alto rendimiento (cluster Instituto).^LISTO
@@ -59,9 +59,9 @@ I_57^Dimensión 4: Líneas de Investigación y Capital Humano Avanzado^N° de pr
 I_58^Dimensión 4: Líneas de Investigación y Capital Humano Avanzado^N° de estudiantes con Becas de financiamiento ANID.^PENDIENTE
 I_59^Dimensión 4: Líneas de Investigación y Capital Humano Avanzado^N° de estudiantes con Becas de financiamiento internacional o empresas.^PENDIENTE
 I_60^Dimensión 4: Líneas de Investigación y Capital Humano Avanzado^N° de programas de postgrado con formación semipresencial.^LISTO
-I_61^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de estudiantes que continúan carrera investigativa asociada a proyectos de investigación una vez titulados.^EN PROCESO
+I_61^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^Nº de estudiantes que continúan carrera investigativa asociada a proyectos de investigación una vez titulados.^EN PROCESO
 I_62^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de proyectos adjudicados de la Subdirección Aplicada ANID versus N° de proyectos postulados de la Subdirección Aplicada^EN PROCESO
 I_63^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de proyectos adjudicados de la subdirección de Investigación ANID versus N° de proyectos postulados de la subdirección de Investigación ANID^EN PROCESO
-I_64^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de Contratos tecnológicos con empresas internacionales^PENDIENTE
+I_64^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^Nº de Contratos tecnológicos con empresas internacionales^PENDIENTE
 I_65^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de postulaciones a fondos con financiamiento externo versus proyectos adjudicados^PENDIENTE
 I_66^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^Tasa de proyecto externos adjudicados versus postulados^PENDIENTE
