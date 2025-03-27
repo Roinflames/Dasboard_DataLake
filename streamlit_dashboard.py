@@ -716,22 +716,13 @@ def mostrar_treemap_dimensiones():
         st.plotly_chart(fig, use_container_width=True)
         
         # Generar leyenda adicional para los números de indicadores
-        st.subheader("Leyenda detallada de indicadores")
-        
-        # Crear pestañas para las categorías
-        tab1, tab2 = st.tabs(["Indicadores Institucionales", "Indicadores Territoriales"])
-        
-        with tab1:
-            # Mostrar indicadores institucionales en una tabla ordenada
-            st.markdown("### Indicadores Institucionales")
-            for idx, row in institucional_df.iterrows():
-                st.markdown(f"**I_{idx+1}:** {row['Indicador']}")
-                
-        with tab2:
-            # Mostrar indicadores territoriales en una tabla ordenada
-            st.markdown("### Indicadores Territoriales")
-            for idx, row in territorial_df.iterrows():
-                st.markdown(f"**T_{idx+1}:** {row['Indicador']}")
+        st.subheader("Datos del estado de los indicadores")
+        st.dataframe(
+            pd.read_csv('data/dataframe_avances-porcentajes_avance.csv',sep='^'),
+            use_container_width=True,
+            hide_index=True
+        )
+
         
     except Exception as e:
         st.error(f"Error al crear el treemap: {str(e)}")
