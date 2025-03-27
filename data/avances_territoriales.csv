@@ -1,0 +1,28 @@
+ID^Dimension^Indicador^Estado
+T_1^Dimensión 1: Características socioeconómicas del territorio^Tasa de empleo por sector productivo^LISTO
+T_2^Dimensión 1: Características socioeconómicas del territorio^Índice de Prioridad Social (IPS) desglosado por comunas (salud, educación, ingresos)^EN PROCESO
+T_3^Dimensión 1: Características socioeconómicas del territorio^Porcentaje de población que mejora su nivel educativo.^LISTO
+T_4^Dimensión 2: Capacidad del territorio para integrar soluciones sostenibles^Porcentaje de generación de energía proveniente de fuentes renovables^EN PROCESO
+T_5^Dimensión 2: Capacidad del territorio para integrar soluciones sostenibles^Número de proyectos de economía circular implementados (públicos, privados y académicos)^EN PROCESO
+T_6^Dimensión 2: Capacidad del territorio para integrar soluciones sostenibles^Áreas verdes por habitante^LISTO
+T_7^Dimensión 2: Capacidad del territorio para integrar soluciones sostenibles^Reduccon de emisiones de CO? en sectores clave (transporte, energía, industria).^EN PROCESO
+T_8^Dimensión 3: Capacidades del capital humano en nuevas economías^Porcentaje de población con formación técnica o profesional en áreas STEM^LISTO
+T_9^Dimensión 3: Capacidades del capital humano en nuevas economías^Número de capacitaciones en nuevas tecnologías realizadas en la región^LISTO
+T_10^Dimensión 3: Capacidades del capital humano en nuevas economías^Tasa de egresados en programas relacionados con economía circular, IA, big data^LISTO
+T_11^Dimensión 3: Capacidades del capital humano en nuevas economías^Tasa de inserción laboral en sectores de nuevas economías en la región^PENDIENTE
+T_12^Dimensión 3: Capacidades del capital humano en nuevas economías^Diferenciación entre formación inicial y formación continua.^EN PROCESO
+T_13^Dimensión 4: Infraestructura tecnológica y de innovación^Cantidad de empresas de base científico-tecnológica^LISTO
+T_14^Dimensión 4: Infraestructura tecnológica y de innovación^Acceso a infraestructura de telecomunicaciones (cobertura de fibra óptica, 5G)^EN PROCESO
+T_15^Dimensión 4: Infraestructura tecnológica y de innovación^Disponibilidad de laboratorios y centros de innovación por comuna^PENDIENTE
+T_16^Dimensión 4: Infraestructura tecnológica y de innovación^Nivel de conectividad digital (porcentaje de hogares con acceso a internet)^EN PROCESO
+T_17^Dimensión 4: Infraestructura tecnológica y de innovación^Porcentaje del PIB regional destinado a investigación y desarrollo^EN PROCESO
+T_18^Dimensión 4: Infraestructura tecnológica y de innovación^Cantidad de patentes registradas en tecnología e innovación por año.^EN PROCESO
+T_19^Dimensión 5: Impacto de nuevas tecnologías en calidad de vida e inclusión social^Número de emprendimientos apoyados por tecnologías emergentes^PENDIENTE
+T_20^Dimensión 5: Impacto de nuevas tecnologías en calidad de vida e inclusión social^Uso de tecnologías digitales en servicios públicos (salud, educaci�n, transporte)^PENDIENTE
+T_21^Dimensión 5: Impacto de nuevas tecnologías en calidad de vida e inclusión social^Brecha digital (porcentaje de población sin acceso a internet o dispositivos y nivel de habilidades digitales)^EN PROCESO
+T_22^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Porcentaje de mujeres en áreas STEM y en proyectos de innovación^EN PROCESO
+T_23^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Brecha salarial por género en sectores tecnológicos^EN PROCESO
+T_24^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Porcentaje de emprendimientos liderados por mujeres^EN PROCESO
+T_25^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Participación femenina en programas de capacitación tecnológica^EN PROCESO
+T_26^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Acceso a financiamiento para mujeres emprendedoras^EN PROCESO
+T_27^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Diferenciación entre participación en niveles de liderazgo (o toma de decisiones) y posiciones técnicas en STEM.^PENDIENTE

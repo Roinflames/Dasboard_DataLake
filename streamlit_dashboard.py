@@ -716,9 +716,16 @@ def mostrar_treemap_dimensiones():
         st.plotly_chart(fig, use_container_width=True)
         
         # Generar leyenda adicional para los números de indicadores
-        st.subheader("Datos del estado de los indicadores")
+        st.subheader("Avance de indicadores institucionales")
         st.dataframe(
-            pd.read_csv('data/dataframe_avances-porcentajes_avance.csv',sep='^'),
+            pd.read_csv('data/avances_institucionales.csv',sep='^'),
+            use_container_width=True,
+            hide_index=True
+        )
+                # Generar leyenda adicional para los números de indicadores
+        st.subheader("Avance de indicadores territoriales")
+        st.dataframe(
+            pd.read_csv('data/avances_territoriales.csv',sep='^'),
             use_container_width=True,
             hide_index=True
         )
