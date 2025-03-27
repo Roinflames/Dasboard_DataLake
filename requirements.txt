@@ -5,3 +5,4 @@ openpyxl
 nbformat
 numpy
 streamlit-echarts
+sqlalchemy
