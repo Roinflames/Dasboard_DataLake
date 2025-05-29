@@ -1,0 +1,78 @@
+id_indicador^dimension^indicador^estado^Origen
+I_1^Dimensión 1: Modelo de Gestión, Costos, Datos, Gobernanza y Normativas^N° Tesis de pre y postgrado que contribuyen a soluciones del territorio^LISTO^Institucional
+I_2^Dimensión 1: Modelo de Gestión, Costos, Datos, Gobernanza y Normativas^Porcentaje de participación de especialistas o expertos UTEM en mesas técnicas gubernamentales para actualización de normativas o mesas de trabajo para toma de decisiones en el sector productivo con influencia en el territorio.^BRECHA^Institucional
+I_3^Dimensión 1: Modelo de Gestión, Costos, Datos, Gobernanza y Normativas^Monto total anual asignado en fondos para I+D i+e (proyectos externos, publicaciones, entre otros, AIUE, AFD).^LISTO^Institucional
+I_4^Dimensión 2: Infraestructura y equipamiento^N° de laboratorios por Facultad y departamento. Docencia, investigación, pre y postgrado.^LISTO^Institucional
+I_5^Dimensión 2: Infraestructura y equipamiento^N° de equipos computacionales de alto rendimiento por laboratorio.^LISTO^Institucional
+I_6^Dimensión 2: Infraestructura y equipamiento^N° M2 dedicados a laboratorios de investigación v/s laboratorio científico por Facultad/ la cantidad de investigadores activos.^LISTO^Institucional
+I_7^Dimensión 2: Infraestructura y equipamiento^N° de de equipamiento científico/tecnológico desagregado por unidad.^LISTO^Institucional
+I_8^Dimensión 2: Infraestructura y equipamiento^Costo Presupuestario a nivel institucional para la compra de equipamiento científico-Tecnológico/Costo Real ejecutado.^LISTO^Institucional
+I_9^Dimensión 3: Programas de postgrado y claustros académicos.^N° y porcentaje de Programas Acreditados^LISTO^Institucional
+I_10^Dimensión 3: Programas de postgrado y claustros académicos.^Porcentaje de cobertura de programas por área de conocimiento.^LISTO^Institucional
+I_11^Dimensión 3: Programas de postgrado y claustros académicos.^Nº de tesis de postgrado que contribuyen al desarrollo local a través de convenios A+S con organismos públicos.^LISTO^Institucional
+I_12^Dimensión 3: Programas de postgrado y claustros académicos.^N° de claustros académicos de programas de postgrado acreditados y no acreditados.^LISTO^Institucional
+I_14^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de investigadores activos por publicaciones, tipo de proyectos, por área de conocimiento, por líneas de investigación.^LISTO^Institucional
+I_15^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de Proyectos de interés público/privado^LISTO^Institucional
+I_16^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de Activos tecnológicos Institucionales/Facultad/ ODS^LISTO^Institucional
+I_17^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de académicos jornada completa con grado de doctor, diferenciados por sexo.^LISTO^Institucional
+I_19^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de investigadores con financiamiento de proyectos que desarrollan i+d+i+e con pertineencia territorial^LISTO^Institucional
+I_20^Dimensión 5: Colaboración Internacional^Número anual de experiencias internacionales formales realizadas por estudiantes y académicos^EN PROCESO^Institucional
+I_21^Dimensión 5: Colaboración Internacional^N° y porcentaje de proyectos internacionales postulados versus adjudicados^BRECHA^Institucional
+I_22^Dimensión 5: Colaboración Internacional^N° de convenios internacionales por programa de postgrado^LISTO^Institucional
+I_23^Dimensión 5: Colaboración Internacional^N° de publicaciones con colaboración internacional^LISTO^Institucional
+I_24^Dimensión 5: Colaboración Internacional^N° de convenio internacionales institucionales versus académicos y estudiantes activos^LISTO^Institucional
+I_25^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° y porcentaje de estudiantes participando en proyectos o acciones de vinculación en innovación, transferencia y emprendimiento.^PENDIENTE^Institucional
+I_26^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^Número total anual de tesis de pregrado y postgrado clasificadas en las áreas de conocimiento establecidas por la OCDE^LISTO^Institucional
+I_27^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de marcas de tecnologías y propias UTEM por año^LISTO^Institucional
+I_28^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^Nº de Contratos tecnológicos con empresas nacionales, internacionales por año.^LISTO^Institucional
+I_29^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^Nº de solicitudes de patentes/ modelos utilidad versus Nº de patentes concedidas/ modelos utilidad concedidos en Chile, internacional.^LISTO^Institucional
+I_30^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^Porcentaje de proyectos de investigación de interés público.^LISTO^Institucional
+I_31^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^N° de redes nacionales con participación activa.^BRECHA^Institucional
+I_32^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^N° de seminarios o talleres realizados con actores externos a la institución en I+D+ i +e.^BRECHA^Institucional
+I_33^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^N° Pasantía e intercambios internacionales (estudiantes y académicos).^LISTO^Institucional
+I_34^Dimensión 1: Modelo de Gestión, Costos, Datos, Gobernanza y Normativas^Monto total anual asignado en incentivos a publicaciones^LISTO^Institucional
+I_35^Dimensión 2: Infraestructura y equipamiento^Espacios de cowork o salas de estudio^BRECHA^Institucional
+I_36^Dimensión 2: Infraestructura y equipamiento^N° de horas anuales de uso de equipos computacionales de alto rendimiento (cluster Instituto).^LISTO^Institucional
+I_37^Dimensión 2: Infraestructura y equipamiento^Número anual de proyectos de investigación, desarrollo o innovación (internos o externos) que incluyen adquisición o utilización de equipamiento científico o tecnológico relevante para su ejecución.^LISTO^Institucional
+I_38^Dimensión 2: Infraestructura y equipamiento^Tasa de recursos apalancados con fondos externos de Laboratorios de investigación por año^LISTO^Institucional
+I_39^Dimensión 2: Infraestructura y equipamiento^Tasa de recursos apalancados con fondos externos de Laboratorios de investigación aplicada por año^LISTO^Institucional
+I_40^Dimensión 2: Infraestructura y equipamiento^Registro de mantenimiento de equipo institucional o Centro de costo asociado^LISTO^Institucional
+I_41^Dimensión 2: Infraestructura y equipamiento^Impacto de citas de los artículos científicos generados por ODS, por territorio.^LISTO^Institucional
+I_43^Dimensión 2: Infraestructura y equipamiento^Cantidad de estudiantes activos que participan en publicaciones.^LISTO^Institucional
+I_44^Dimensión 2: Infraestructura y equipamiento^Cantidad de académicos activos que participan en publicaciones.^LISTO^Institucional
+I_45^Dimensión 2: Infraestructura y equipamiento^Cantidad de académicos activos que participan en proyectos externos de investigación aplicada^LISTO^Institucional
+I_46^Dimensión 2: Infraestructura y equipamiento^Cantidad de académicos activos que participan en proyectos externos de investigación básica^LISTO^Institucional
+I_47^Dimensión 2: Infraestructura y equipamiento^Catastro de contratos tecnológicos, cantidad (centros/unidades), presupuesto, por áreas de conocimiento, objetivo por convenios.^LISTO^Institucional
+I_49^Dimensión 2: Infraestructura y equipamiento^Catastro de empresas por líneas prioritarias de investigación^LISTO^Institucional
+I_50^Dimensión 2: Infraestructura y equipamiento^N° de laboratorios por Facultad y departamento^LISTO^Institucional
+I_51^Dimensión 3: Programas de postgrado y claustros académicos.^Número de estudiantes de postgrado por área OCDE^EN PROCESO^Institucional
+I_52^Dimensión 4: Líneas de investigación y capital humano avanzado^Porcentaje de proyectos de investigación que contribuyen con datos de interés público^EN PROCESO^Institucional
+I_53^Dimensión 4: Líneas de investigación y capital humano avanzado^Número total de académicos que participan por área OCDE.^LISTO^Institucional
+I_54^Dimensión 4: Líneas de investigación y capital humano avanzado^Proyectos por área OCDE^LISTO^Institucional
+I_56^Dimensión 4: Líneas de investigación y capital humano avanzado^Registro de presupuesto para investigación^LISTO^Institucional
+I_57^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de proyectos adjudicados de la subdirección de Redes-Estrategia y conocimiento ANID versus N° de proyectos postulados de la subdirección de subdirección de Redes-Estrategia y conocimiento ANID.^EN PROCESO^Institucional
+I_58^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de estudiantes con Becas de financiamiento ANID.^LISTO^Institucional
+I_59^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de estudiantes con Becas de financiamiento internacional o empresas.^BRECHA^Institucional
+I_60^Dimensión 4: Líneas de investigación y capital humano avanzado^N° de programas de postgrado con formación semipresencial.^LISTO^Institucional
+I_61^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^Porcentaje de estudiantes titulados que se integran en programas de investigación o postgrado dentro del primer año después de su titulación.^EN PROCESO^Institucional
+I_62^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de proyectos adjudicados de la Subdirección Aplicada ANID versus N° de proyectos postulados de la Subdirección Aplicada^EN PROCESO^Institucional
+I_63^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de proyectos adjudicados de la subdirección de Investigación ANID versus N° de proyectos postulados de la subdirección de Investigación ANID^EN PROCESO^Institucional
+I_64^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^Nº de Contratos tecnológicos con empresas internacionales^LISTO^Institucional
+I_65^Dimensión 6: Mecanismos de innovación, emprendimiento y transferencia tecnológica^N° de postulaciones a fondos con financiamiento externo versus proyectos adjudicados^EN PROCESO^Institucional
+I_66^Dimensión 7: Vinculación, difusión y redes asociadas a actividades de I+D+i.^Tasa de proyecto externos adjudicados versus postulados^EN PROCESO^Institucional
+T_1^Dimensión 1: Características socioeconómicas del territorio^Tasa de empleo por sector productivo^LISTO^Territorial
+T_2^Dimensión 1: Características socioeconómicas del territorio^Índice de Prioridad Social (IPS) desglosado por comunas (salud, educación, ingresos)^LISTO^Territorial
+T_3^Dimensión 1: Características socioeconómicas del territorio^N° de personas con 14 años o más de escolaridad por comuna^LISTO^Territorial
+T_4^Dimensión 2: Capacidad del territorio para integrar soluciones sostenibles^Proyectos de innovación con enfoque de Sostenibilidad^LISTO^Territorial
+T_6^Dimensión 2: Capacidad del territorio para integrar soluciones sostenibles^Superficie total de áreas verdes en metros cuadrados por habitante^LISTO^Territorial
+T_7^Dimensión 2: Capacidad del territorio para integrar soluciones sostenibles^Registro de emisiones y transferencias de contaminantes por comuna^LISTO^Territorial
+T_8^Dimensión 3: Capacidades del capital humano en nuevas economías^Porcentaje de población con formación técnica o profesional en sectores del mercado^LISTO^Territorial
+T_13^Dimensión 4: Infraestructura tecnológica y de innovación^Cantidad de empresas de base científico-tecnológica^LISTO^Territorial
+T_16^Dimensión 4: Infraestructura tecnológica y de innovación^Número de conexiones por tipo (telefonia fija, internet, television) por comuna^LISTO^Territorial
+T_18^Dimensión 4: Infraestructura tecnológica y de innovación^Número de patentes de innovación por subtipo registradas por comuna de origen^LISTO^Territorial
+T_19^Dimensión 5: Impacto de nuevas tecnologías en calidad de vida e inclusión social^Número de marcas registradas por comuna de origen^LISTO^Territorial
+T_22^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Número de proyectos de innovación liderados (director o investigador principal) por mujeres ^LISTO^Territorial
+T_23^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Brecha de género en la proporción de beneficiarias y beneficiarios en los instrumentos de Sercotec^LISTO^Territorial
+T_24^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Número de patentes registradas por mujeres^LISTO^Territorial
+T_26^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Número, distribución porcentual y brecha de género de personas microemprendedoras^LISTO^Territorial
+T_27^Dimensión 6: Identificación de brechas de género en nuevas economías y tecnologías^Número de proyectos ANID lideraos por mujeres^LISTO^Territorial

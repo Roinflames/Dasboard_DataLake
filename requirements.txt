@@ -6,3 +6,4 @@ nbformat
 numpy
 streamlit-echarts
 sqlalchemy
+duckdb

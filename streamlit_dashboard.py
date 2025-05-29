@@ -5,10 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import os
-# from sqlalchemy import create_engine
-
-# # Crear conexión usando SQLAlchemy
-# engine = create_engine('mariadb+mariadbconnector://testfiut:utem1234@localhost/mysql')
+import duckdb
 
 # Configuración de la página
 st.set_page_config(
@@ -18,7 +15,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
     menu_items={
          'About': "# PROYECTO FIU UTEM \n Dashboard creado por el equipo de integración de datos \n - Diego Santibañez, dsantibanezo@utem.cl\n - Esteban Gomez, egomez@utem.cl\n - Hugo Osses, hosses@sutem.cl"
-        #'About': "# PROYECTO FIU UTEM"
     }
 )
 
@@ -424,10 +420,12 @@ def crear_grafico_estados_interactivo(df):
         titulo_origen = "Global"
     
     # Definir mapas de colores para diferentes categorías
+    # Definir mapas de colores para diferentes categorías
     color_map_estados = {
         "PENDIENTE": "#FEC109",  # Amarillo
         "EN PROCESO": "#1E88E5",  # Azul medio
-        "LISTO": "#0A5C99"       # Azul oscuro
+        "LISTO": "#0A5C99",      # Azul oscuro
+        "BRECHA": "#B19CD9"      # Morado claro
     }
     
     # Colores base para otras categorías
@@ -523,7 +521,7 @@ def crear_grafico_estados_interactivo(df):
         estado_html = "<div style='background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:10px;'>"
         estado_html += "<h4>Interpretación de Estados</h4><ul>"
         
-        for estado in ["PENDIENTE", "EN PROCESO", "LISTO"]:
+        for estado in ["PENDIENTE", "EN PROCESO", "LISTO", "BRECHA"]:
             if estado in color_map:
                 color = color_map[estado]
                 estado_html += f"<li><div style='display:flex; align-items:center;'>"
@@ -536,6 +534,8 @@ def crear_grafico_estados_interactivo(df):
                     descripcion = "Indicadores que están actualmente en fase de implementación"
                 elif estado == "LISTO":
                     descripcion = "Indicadores que han sido completados"
+                elif estado == "BRECHA":
+                    descripcion = "Indicadores identificados como brechas o áreas de mejora prioritarias"
                 else:
                     descripcion = "Estado sin descripción"
                     
@@ -555,14 +555,15 @@ def crear_grafico_estados_interactivo(df):
 
 # Cargar datos de indicadores
 @st.cache_data
-def cargar_indicadores(ruta='data/porcentajes_avance.csv'):
+def cargar_indicadores(ruta='data/indicadores_actualizado_20250528.csv'):
+    # id_indicador	dimension	indicador_original	indicador	estado	Origen
     try:
         df = pd.read_csv(ruta, sep='^')
         # Renombrar columnas para mayor claridad
         df = df.rename(columns={
-            'ID': 'ID',
-            'Dimension': 'Dimension',
-            'Estado': 'Estado',
+            'id_indicador': 'ID',
+            'dimension': 'Dimension',
+            'estado': 'Estado',
             'Origen': 'Origen'
         })
         return df
@@ -585,79 +586,17 @@ def mostrar_treemap_dimensiones():
     # Verificar archivos disponibles y mostrar información de depuración
     archivos_disp = [f for f in os.listdir('data') if f.endswith('.csv')]
     
-    if not any(f.lower() in ['institucional.csv', 'territorial.csv'] for f in archivos_disp):
-        st.error("No se encontraron los archivos necesarios: Institucional.csv y territorial.csv")
-        st.info(f"Archivos CSV disponibles: {', '.join(archivos_disp)}")
-        st.info(f"Directorio actual: {os.getcwd()}")
-        return
-    
-    # Función para cargar datos con mejor manejo de errores
-    def cargar_csv_seguro(nombre_archivo):
-        try:
-            # Intenta diferentes codificaciones
-            for encoding in ['utf-8', 'latin-1', 'ISO-8859-1', 'cp1252']:
-                try:
-                    ruta_completa = os.path.join(os.getcwd(), nombre_archivo)
-                    df = pd.read_csv(ruta_completa, encoding=encoding)
-                    return df
-                except UnicodeDecodeError:
-                    continue
-                except Exception as e:
-                    st.warning(f"Error al cargar {nombre_archivo} con {encoding}: {str(e)}")
-                    continue
-            
-            # Si ninguna codificación funcionó
-            st.error(f"No se pudo cargar {nombre_archivo} con ninguna codificación.")
-            return None
-        except Exception as e:
-            st.error(f"Error inesperado al cargar {nombre_archivo}: {str(e)}")
-            return None
-    
     # Cargar los dataframes
-    institucional_df = cargar_csv_seguro('data/Institucional.csv')
-    territorial_df = cargar_csv_seguro('data/territorial.csv')
+    df_treemap=pd.read_csv("data/indicadores_actualizado_20250528.csv", sep='^')
+    # Dimension,Indicador
+    institucional_df = duckdb.sql("select dimension as 'Dimension', indicador as 'Indicador' from df_treemap where origen='Institucional'").to_df()
+    territorial_df = duckdb.sql("select dimension as 'Dimension', indicador as 'Indicador' from df_treemap where origen='Territorial'").to_df()
     
     # Verificar si se cargaron los datos
     if institucional_df is None or territorial_df is None:
-        st.error("No se pudieron cargar uno o ambos archivos CSV.")
+        st.error("Error al cargar los datos")
         return
     
-    # Crear datos simulados si los archivos no contienen la estructura esperada
-    if 'Dimension' not in institucional_df.columns or 'Indicador' not in institucional_df.columns:
-        st.warning("Los archivos CSV no tienen el formato esperado. Usando datos simulados.")
-        
-        # Crear dataframes simulados basados en el CSV de porcentajes avances
-        df_indicadores = cargar_indicadores()
-        
-        # Verificar si se cargó el archivo de indicadores
-        if df_indicadores.empty:
-            st.error("No se pudieron cargar los datos de indicadores.")
-            return
-        
-        # Crear dataframes simulados
-        institucional_df = df_indicadores[df_indicadores['Origen'] == 'Institucional'].copy()
-        institucional_df['Dimension'] = institucional_df['Dimension']
-        institucional_df['Indicador'] = institucional_df['ID'] + ": " + institucional_df['Estado']
-        
-        territorial_df = df_indicadores[df_indicadores['Origen'] == 'Territorial'].copy()
-        territorial_df['Dimension'] = territorial_df['Dimension']
-        territorial_df['Indicador'] = territorial_df['ID'] + ": " + territorial_df['Estado']
-    
-    # Convertir "Indicadores" a "Indicador" para uniformidad
-    if 'Indicadores' in territorial_df.columns and 'Indicador' not in territorial_df.columns:
-        territorial_df = territorial_df.rename(columns={'Indicadores': 'Indicador'})
-    
-    # # Acortar el texto de los indicadores para mejor visualización en el treemap
-    # def acortar_texto(texto, max_longitud=60):
-    #     if isinstance(texto, str) and len(texto) > max_longitud:
-    #         return texto[:max_longitud] + "..."
-    #     return texto
-    
-    # # Crear versiones cortas de los indicadores para el treemap
-    # institucional_df['Indicador_Corto'] = institucional_df['Indicador'].apply(acortar_texto)
-    # territorial_df['Indicador_Corto'] = territorial_df['Indicador'].apply(acortar_texto)
-    
-    # Agregar números de indicador (I_1, I_2, etc. para institucionales y T_1, T_2, etc. para territoriales)
     # Crear una nueva columna con números de índice
     institucional_df = institucional_df.reset_index(drop=True)
     territorial_df = territorial_df.reset_index(drop=True)
@@ -713,18 +652,17 @@ def mostrar_treemap_dimensiones():
         
         # Mostrar el treemap
         st.plotly_chart(fig, use_container_width=True)
-        
         # Generar leyenda adicional para los números de indicadores
         st.subheader("Avance de indicadores institucionales")
         st.dataframe(
-            pd.read_csv('data/avances_institucionales.csv',sep='^'),
+            duckdb.sql("select id_indicador as 'ID', dimension as 'Dimension', indicador as 'Indicador', estado as 'Estado' from df_treemap where origen='Institucional'").to_df(),
             use_container_width=True,
             hide_index=True
         )
                 # Generar leyenda adicional para los números de indicadores
         st.subheader("Avance de indicadores territoriales")
         st.dataframe(
-            pd.read_csv('data/avances_territoriales.csv',sep='^'),
+            duckdb.sql("select id_indicador as 'ID', dimension as 'Dimension', indicador as 'Indicador', estado as 'Estado' from df_treemap where origen='Territorial'").to_df(),
             use_container_width=True,
             hide_index=True
         )
@@ -741,12 +679,8 @@ def mostrar_tabla_comunas():
     Carga y muestra una tabla con información de las comunas de la Región Metropolitana.
     """
     st.subheader("Comunas del proyecto - Región Metropolitana")
-
-    querycomunas="""select cpt.nombre_comuna, cpt.nombre_provincia, cr.nombre as nombre_region from fiut.comunas_provincias_territorio cpt
-    join fiut.chile_regiones cr on cr.nombre='Metropolitana de Santiago';"""
     
     # Cargar el dataframe
-    # df_comunas = pd.read_sql(querycomunas, engine)
     df_comunas = pd.read_csv('data/Comunas.csv')
 
     
@@ -758,32 +692,6 @@ def mostrar_tabla_comunas():
             hide_index=True
         )
         
-        # # Información adicional
-        # col1, col2 = st.columns(2)
-        
-        # with col1:
-        #     # Contar comunas por provincia
-        #     comunas_por_provincia = df_comunas['Provincia'].value_counts().reset_index()
-        #     comunas_por_provincia.columns = ['Provincia', 'Cantidad de Comunas']
-            
-        #     st.write("Distribución por Provincia:")
-        #     st.dataframe(
-        #         comunas_por_provincia,
-        #         use_container_width=True,
-        #         hide_index=True
-        #     )
-        
-        # with col2:
-        #     st.markdown("""
-        #     <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
-        #     <h4>Acerca de las comunas prioritarias</h4>
-        #     <p>Estas 22 comunas han sido identificadas como prioritarias para el proyecto CINET, 
-        #     enfocado en el desarrollo de centros interdisciplinarios en nuevas economías y 
-        #     tecnologías.</p>
-        #     <p>La selección abarca comunas de 5 provincias diferentes de la Región Metropolitana, 
-        #     con especial énfasis en comunas pertenecientes a la provincia de Santiago.</p>
-        #     </div>
-        #     """, unsafe_allow_html=True)
     else:
         st.warning("No se pudo cargar la información de comunas.")
 
@@ -830,6 +738,7 @@ def main():
     df_indicadores = cargar_indicadores()
 
     # Calcular porcentajes de completitud y conteos por estado
+    # Calcular porcentajes de completitud y conteos por estado
     if not df_indicadores.empty:
         # Calcular para Institucional
         df_inst = df_indicadores[df_indicadores['Origen'] == 'Institucional']
@@ -837,9 +746,11 @@ def main():
         completados_inst = len(df_inst[df_inst['Estado'] == 'LISTO'])
         en_proceso_inst = len(df_inst[df_inst['Estado'] == 'EN PROCESO'])
         pendientes_inst = len(df_inst[df_inst['Estado'] == 'PENDIENTE'])
+        brecha_inst = len(df_inst[df_inst['Estado'] == 'BRECHA'])
         porc_completitud_inst = completados_inst / total_inst * 100
         porc_proceso_inst = en_proceso_inst / total_inst * 100
         porc_pendientes_inst = pendientes_inst / total_inst * 100
+        porc_brecha_inst = brecha_inst / total_inst * 100
         
         # Calcular para Territorial
         df_terr = df_indicadores[df_indicadores['Origen'] == 'Territorial']
@@ -847,41 +758,41 @@ def main():
         completados_terr = len(df_terr[df_terr['Estado'] == 'LISTO'])
         en_proceso_terr = len(df_terr[df_terr['Estado'] == 'EN PROCESO'])
         pendientes_terr = len(df_terr[df_terr['Estado'] == 'PENDIENTE'])
+        brecha_terr = len(df_terr[df_terr['Estado'] == 'BRECHA'])
         porc_completitud_terr = completados_terr / total_terr * 100
         porc_proceso_terr = en_proceso_terr / total_terr * 100
         porc_pendientes_terr = pendientes_terr / total_terr * 100
+        porc_brecha_terr = brecha_terr / total_terr * 100
         
         # Calcular global
         total_global = len(df_indicadores)
         completados_global = len(df_indicadores[df_indicadores['Estado'] == 'LISTO'])
         en_proceso_global = len(df_indicadores[df_indicadores['Estado'] == 'EN PROCESO'])
         pendientes_global = len(df_indicadores[df_indicadores['Estado'] == 'PENDIENTE'])
+        brecha_global = len(df_indicadores[df_indicadores['Estado'] == 'BRECHA'])
         porc_completitud_global = completados_global / total_global * 100
         porc_proceso_global = en_proceso_global / total_global * 100
         porc_pendientes_global = pendientes_global / total_global * 100
-
+        porc_brecha_global = brecha_global / total_global * 100
     # Métricas principales con tres columnas
     col1, col2, col3 = st.columns(3)
 
     with col1:
         if not df_indicadores.empty:
-            # Usar None como delta para no mostrar la flecha
             st.metric(
                 "Indicadores Institucionales", 
                 f"{porc_completitud_inst:.1f}% Completados", 
                 f"Total: {total_inst}",
-                delta_color="off"  # Desactivar el color del delta
+                delta_color="off"
             )
-            # Añadir conteo detallado por estado con porcentajes
             st.markdown(f"""
             <div style="padding-left:10px;">
                 <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_inst} ({porc_completitud_inst:.1f}%)<br>
                 <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_inst} ({porc_proceso_inst:.1f}%)<br>
-                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_inst} ({porc_pendientes_inst:.1f}%)
+                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_inst} ({porc_pendientes_inst:.1f}%)<br>
+                <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_inst} ({porc_brecha_inst:.1f}%)
             </div>
             """, unsafe_allow_html=True)
-        else:
-            st.metric("Indicadores Institucionales", "Sin datos", "")
 
     with col2:
         if not df_indicadores.empty:
@@ -889,18 +800,16 @@ def main():
                 "Indicadores Territoriales", 
                 f"{porc_completitud_terr:.1f}% Completados", 
                 f"Total: {total_terr}",
-                delta_color="off"  # Desactivar el color del delta
+                delta_color="off"
             )
-            # Añadir conteo detallado por estado con porcentajes
             st.markdown(f"""
             <div style="padding-left:10px;">
                 <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_terr} ({porc_completitud_terr:.1f}%)<br>
                 <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_terr} ({porc_proceso_terr:.1f}%)<br>
-                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_terr} ({porc_pendientes_terr:.1f}%)
+                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_terr} ({porc_pendientes_terr:.1f}%)<br>
+                <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_terr} ({porc_brecha_terr:.1f}%)
             </div>
             """, unsafe_allow_html=True)
-        else:
-            st.metric("Indicadores Territoriales", "Sin datos", "")
 
     with col3:
         if not df_indicadores.empty:
@@ -908,18 +817,16 @@ def main():
                 "Avance General", 
                 f"{porc_completitud_global:.1f}% Completado", 
                 f"Total: {total_global} Indicadores",
-                delta_color="off"  # Desactivar el color del delta
+                delta_color="off"
             )
-            # Añadir conteo detallado por estado con porcentajes
             st.markdown(f"""
             <div style="padding-left:10px;">
                 <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_global} ({porc_completitud_global:.1f}%)<br>
                 <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_global} ({porc_proceso_global:.1f}%)<br>
-                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_global} ({porc_pendientes_global:.1f}%)
+                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_global} ({porc_pendientes_global:.1f}%)<br>
+                <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_global} ({porc_brecha_global:.1f}%)
             </div>
             """, unsafe_allow_html=True)
-        else:
-            st.metric("Avance General", "Sin datos", "")
     
     # Pestañas para diferentes análisis
     tab1, tab2, tab3, tab4, tab5, tab6, tab7= st.tabs([
