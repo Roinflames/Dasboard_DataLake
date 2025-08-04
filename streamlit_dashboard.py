@@ -672,6 +672,69 @@ def mostrar_treemap_dimensiones():
         st.error(f"Error al crear el treemap: {str(e)}")
         st.write("Estructura de los datos:", df_combined.head())
 
+def mostrar_treemap_dimension_e():
+    st.subheader("Treemap de dimensiones e indicadores")
+    
+    archivos_disp = [f for f in os.listdir('data') if f.endswith('.csv')]
+    
+    df_treemap=pd.read_csv("data/indicadores_actualizado_20250528.csv", sep='^')
+    institucional_df = duckdb.sql("select dimension as 'Dimension', indicador as 'Indicador' from df_treemap where origen='Institucional'").to_df()
+    print(institucional_df.head())
+    if institucional_df is None:
+        st.error("Error al cargar los datos")
+        return
+    
+    institucional_df = institucional_df.reset_index(drop=True)
+    institucional_df['Indicador_Numerado'] = [f"I_{i+1}: {ind}" for i, ind in enumerate(institucional_df['Indicador'])]
+    institucional_df['Valor'] = 10
+    institucional_df['Categoria'] = 'Institucional'
+    institucional_df = institucional_df[institucional_df["Dimension"].str.startswith("Dimensión 5")]
+
+    df_combined = pd.concat([institucional_df], ignore_index=True)
+    
+    columnas_requeridas = ['Categoria', 'Dimension', 'Indicador_Numerado', 'Valor']
+    columnas_faltantes = [col for col in columnas_requeridas if col not in df_combined.columns]
+    
+    if columnas_faltantes:
+        st.error(f"Faltan columnas requeridas: {', '.join(columnas_faltantes)}")
+        st.write("Columnas disponibles:", df_combined.columns.tolist())
+        return
+    
+    try:
+        fig = px.treemap(
+            df_combined,
+            path=['Categoria', 'Dimension', 'Indicador_Numerado'],
+            values='Valor',
+            color='Categoria',  # Colorear por categoría
+            color_discrete_map={
+                'Institucional': '#0A5C99',
+                'Territorial': '#FEC109'
+            }
+        )
+        
+        fig.update_traces(
+            textfont=dict(size=24),  # Aumentar tamaño de fuente significativamente
+            texttemplate='%{label}',
+            hovertemplate='<b>%{label}</b><br>Categoría: %{root}<br>Dimensión: %{parent}'
+        )
+        
+        fig.update_layout(
+            margin=dict(t=50, l=25, r=25, b=25),
+            height=900,  # Aumentar altura para mejor visualización
+            template='plotly_white'
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        st.subheader("Avance de indicadores institucionales")
+        st.dataframe(
+            duckdb.sql("select id_indicador as 'ID', dimension as 'Dimension', indicador as 'Indicador', estado as 'Estado' from df_treemap where origen='Institucional'").to_df(),
+            use_container_width=True,
+            hide_index=True
+        )
+        
+    except Exception as e:
+        st.error(f"Error al crear el treemap: {str(e)}")
+        st.write("Estructura de los datos:", df_combined.head())
 
 # Función para cargar y mostrar la tabla de comunas
 def mostrar_tabla_comunas():
@@ -696,541 +759,564 @@ def mostrar_tabla_comunas():
         st.warning("No se pudo cargar la información de comunas.")
 
 def main():
-    # Aplicar estilo CSS personalizado para centrar imágenes en columnas
-    st.markdown("""
-    <style>
-        /* Centrar contenido en las columnas */
-        div[data-testid="column"] {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    if st.query_params:
+        '''
+        Este espacio es para cargar las vistas de streamlit como iframe en el DataWarehouse
+        '''
+        if st.query_params['dimension'] == 'e':
 
-    col1, col2 = st.columns(2)
-
-    # Columna izquierda para una imagen (con ruta corregida)
-    with col1:
-        st.image("imagenes/Ministerio de Ciencias color.png", width=150)
-
-    # Columna derecha para otra imagen (con ruta corregida)
-    with col2:
-        st.image("imagenes/Isologo FIU UTEM color.png", width=400)
-
-    st.title("Proyecto FIUT 2024 UTEM")
-    
-    # Cargar y procesar datos
-    df = cargar_datos()
-    df = procesar_datos(df)
-    
-    if df.empty:
-        st.warning("No hay datos disponibles para analizar.")
-        return
-    
-    # Contador total de archivos
-    total_archivos = len(df)
-    # Usar la función en tu aplicación
-    st.markdown(f"### Levantamiento de un diagnóstico integral del territorio local y de las capacidades institucionales UTEM para la creación de un Centro Interdisciplinario en nuevas economías y tecnologías, orientado al desarrollo de localidades prioritarias de la Región Metropolitana. (CINET)")
-    # Cargar datos de indicadores para las métricas de completitud
-    # Cargar datos de indicadores para las métricas de completitud
-    df_indicadores = cargar_indicadores()
-
-    # Calcular porcentajes de completitud y conteos por estado
-    # Calcular porcentajes de completitud y conteos por estado
-    if not df_indicadores.empty:
-        # Calcular para Institucional
-        df_inst = df_indicadores[df_indicadores['Origen'] == 'Institucional']
-        total_inst = len(df_inst)
-        completados_inst = len(df_inst[df_inst['Estado'] == 'LISTO'])
-        en_proceso_inst = len(df_inst[df_inst['Estado'] == 'EN PROCESO'])
-        pendientes_inst = len(df_inst[df_inst['Estado'] == 'PENDIENTE'])
-        brecha_inst = len(df_inst[df_inst['Estado'] == 'BRECHA'])
-        porc_completitud_inst = completados_inst / total_inst * 100
-        porc_proceso_inst = en_proceso_inst / total_inst * 100
-        porc_pendientes_inst = pendientes_inst / total_inst * 100
-        porc_brecha_inst = brecha_inst / total_inst * 100
-        
-        # Calcular para Territorial
-        df_terr = df_indicadores[df_indicadores['Origen'] == 'Territorial']
-        total_terr = len(df_terr)
-        completados_terr = len(df_terr[df_terr['Estado'] == 'LISTO'])
-        en_proceso_terr = len(df_terr[df_terr['Estado'] == 'EN PROCESO'])
-        pendientes_terr = len(df_terr[df_terr['Estado'] == 'PENDIENTE'])
-        brecha_terr = len(df_terr[df_terr['Estado'] == 'BRECHA'])
-        porc_completitud_terr = completados_terr / total_terr * 100
-        porc_proceso_terr = en_proceso_terr / total_terr * 100
-        porc_pendientes_terr = pendientes_terr / total_terr * 100
-        porc_brecha_terr = brecha_terr / total_terr * 100
-        
-        # Calcular global
-        total_global = len(df_indicadores)
-        completados_global = len(df_indicadores[df_indicadores['Estado'] == 'LISTO'])
-        en_proceso_global = len(df_indicadores[df_indicadores['Estado'] == 'EN PROCESO'])
-        pendientes_global = len(df_indicadores[df_indicadores['Estado'] == 'PENDIENTE'])
-        brecha_global = len(df_indicadores[df_indicadores['Estado'] == 'BRECHA'])
-        porc_completitud_global = completados_global / total_global * 100
-        porc_proceso_global = en_proceso_global / total_global * 100
-        porc_pendientes_global = pendientes_global / total_global * 100
-        porc_brecha_global = brecha_global / total_global * 100
-    # Métricas principales con tres columnas
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        if not df_indicadores.empty:
-            st.metric(
-                "Indicadores Institucionales", 
-                f"{porc_completitud_inst:.1f}% Completados", 
-                f"Total: {total_inst}",
-                delta_color="off"
-            )
-            st.markdown(f"""
-            <div style="padding-left:10px;">
-                <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_inst} ({porc_completitud_inst:.1f}%)<br>
-                <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_inst} ({porc_proceso_inst:.1f}%)<br>
-                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_inst} ({porc_pendientes_inst:.1f}%)<br>
-                <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_inst} ({porc_brecha_inst:.1f}%)
-            </div>
-            """, unsafe_allow_html=True)
-
-    with col2:
-        if not df_indicadores.empty:
-            st.metric(
-                "Indicadores Territoriales", 
-                f"{porc_completitud_terr:.1f}% Completados", 
-                f"Total: {total_terr}",
-                delta_color="off"
-            )
-            st.markdown(f"""
-            <div style="padding-left:10px;">
-                <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_terr} ({porc_completitud_terr:.1f}%)<br>
-                <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_terr} ({porc_proceso_terr:.1f}%)<br>
-                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_terr} ({porc_pendientes_terr:.1f}%)<br>
-                <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_terr} ({porc_brecha_terr:.1f}%)
-            </div>
-            """, unsafe_allow_html=True)
-
-    with col3:
-        if not df_indicadores.empty:
-            st.metric(
-                "Avance General", 
-                f"{porc_completitud_global:.1f}% Completado", 
-                f"Total: {total_global} Indicadores",
-                delta_color="off"
-            )
-            st.markdown(f"""
-            <div style="padding-left:10px;">
-                <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_global} ({porc_completitud_global:.1f}%)<br>
-                <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_global} ({porc_proceso_global:.1f}%)<br>
-                <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_global} ({porc_pendientes_global:.1f}%)<br>
-                <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_global} ({porc_brecha_global:.1f}%)
-            </div>
-            """, unsafe_allow_html=True)
-    
-    # Pestañas para diferentes análisis
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7= st.tabs([
-        "Vista General", 
-        "Análisis por Dimensiones",
-        "Análisis de Estado Indicadores",
-        "Insights Adicionales",
-        "Mapa Geográfico",
-        "Mapa Sedes",
-        "Análisis de Archivos"
-    ])
-
-
-    # NOTA: Añadir treemap a la vista general 
-    # NOTA: Los graficos de vista general pasan a análisis por Tipo
-    # TAB 1: Vista General
-    with tab1:
+            tab1, tab2, tab3, tab4, tab5, tab6, tab7= st.tabs([
+                "Vista General", 
+                "Análisis por Dimensiones",
+                "Análisis de Estado Indicadores",
+                "Insights Adicionales",
+                "Mapa Geográfico",
+                "Mapa Sedes",
+                "Análisis de Archivos"
+            ])
+            
+            with tab1:
+                mostrar_treemap_dimension_e()
+            
+    else:      
+        '''
+        Este espacio es para cargar el DataLake completo
+        '''
+        # Aplicar estilo CSS personalizado para centrar imágenes en columnas
         st.markdown("""
-        <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:20px;">
-         <h3>Descripción </h3>
-        <p>El proyecto busca potenciar la investigación aplicada y la innovación en la Universidad Tecnológica Metropolitana mediante un diagnóstico integral del territorio y de sus capacidades institucionales, identificando fortalezas y brechas en gestión, infraestructura, oferta académica y colaboración; a partir de este análisis, se plantea la creación de un centro interdisciplinario que impulse la transferencia tecnológica y establezca alianzas estratégicas entre la academia, la industria y el sector público, contribuyendo al desarrollo sostenible y competitivo de la Región Metropolitana.</p>
-        <h3>Objetivo del Fondo de Financiamiento Estructural de I+D+i (FIU) Territorial: </h3>
-        <p>Potenciar la contribución de universidades con acreditación entre 3 y 5 años al desarrollo territorial y los procesos de  descentralización, mediante el financiamiento de capacidades mínimas de I+D+i, incluyendo su respectiva gestión y gobernanza institucional.</p>
-        </div>
+        <style>
+            /* Centrar contenido en las columnas */
+            div[data-testid="column"] {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+        </style>
         """, unsafe_allow_html=True)
-        
-        mostrar_tabla_comunas()
 
-        mostrar_treemap_dimensiones()
-        
-
-    with tab2:
-        st.header("Análisis por Dimensiones")
-    
-        # Mantén el código existente aquí...
         col1, col2 = st.columns(2)
-        
+
+        # Columna izquierda para una imagen (con ruta corregida)
         with col1:
-            # Selector para filtrar dimensiones
-            filtro_dim = st.radio(
-                "Seleccionar categoría para dimensiones:",
+            st.image("imagenes/Ministerio de Ciencias color.png", width=150)
+
+        # Columna derecha para otra imagen (con ruta corregida)
+        with col2:
+            st.image("imagenes/Isologo FIU UTEM color.png", width=400)
+
+        st.title("Proyecto FIUT 2024 UTEM")
+        
+        # Cargar y procesar datos
+        df = cargar_datos()
+        df = procesar_datos(df)
+        
+        if df.empty:
+            st.warning("No hay datos disponibles para analizar.")
+            return
+        
+        # Contador total de archivos
+        total_archivos = len(df)
+        # Usar la función en tu aplicación
+        st.markdown(f"### Levantamiento de un diagnóstico integral del territorio local y de las capacidades institucionales UTEM para la creación de un Centro Interdisciplinario en nuevas economías y tecnologías, orientado al desarrollo de localidades prioritarias de la Región Metropolitana. (CINET)")
+        # Cargar datos de indicadores para las métricas de completitud
+        # Cargar datos de indicadores para las métricas de completitud
+        df_indicadores = cargar_indicadores()
+
+        # Calcular porcentajes de completitud y conteos por estado
+        # Calcular porcentajes de completitud y conteos por estado
+        if not df_indicadores.empty:
+            # Calcular para Institucional
+            df_inst = df_indicadores[df_indicadores['Origen'] == 'Institucional']
+            total_inst = len(df_inst)
+            completados_inst = len(df_inst[df_inst['Estado'] == 'LISTO'])
+            en_proceso_inst = len(df_inst[df_inst['Estado'] == 'EN PROCESO'])
+            pendientes_inst = len(df_inst[df_inst['Estado'] == 'PENDIENTE'])
+            brecha_inst = len(df_inst[df_inst['Estado'] == 'BRECHA'])
+            porc_completitud_inst = completados_inst / total_inst * 100
+            porc_proceso_inst = en_proceso_inst / total_inst * 100
+            porc_pendientes_inst = pendientes_inst / total_inst * 100
+            porc_brecha_inst = brecha_inst / total_inst * 100
+            
+            # Calcular para Territorial
+            df_terr = df_indicadores[df_indicadores['Origen'] == 'Territorial']
+            total_terr = len(df_terr)
+            completados_terr = len(df_terr[df_terr['Estado'] == 'LISTO'])
+            en_proceso_terr = len(df_terr[df_terr['Estado'] == 'EN PROCESO'])
+            pendientes_terr = len(df_terr[df_terr['Estado'] == 'PENDIENTE'])
+            brecha_terr = len(df_terr[df_terr['Estado'] == 'BRECHA'])
+            porc_completitud_terr = completados_terr / total_terr * 100
+            porc_proceso_terr = en_proceso_terr / total_terr * 100
+            porc_pendientes_terr = pendientes_terr / total_terr * 100
+            porc_brecha_terr = brecha_terr / total_terr * 100
+            
+            # Calcular global
+            total_global = len(df_indicadores)
+            completados_global = len(df_indicadores[df_indicadores['Estado'] == 'LISTO'])
+            en_proceso_global = len(df_indicadores[df_indicadores['Estado'] == 'EN PROCESO'])
+            pendientes_global = len(df_indicadores[df_indicadores['Estado'] == 'PENDIENTE'])
+            brecha_global = len(df_indicadores[df_indicadores['Estado'] == 'BRECHA'])
+            porc_completitud_global = completados_global / total_global * 100
+            porc_proceso_global = en_proceso_global / total_global * 100
+            porc_pendientes_global = pendientes_global / total_global * 100
+            porc_brecha_global = brecha_global / total_global * 100
+        # Métricas principales con tres columnas
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            if not df_indicadores.empty:
+                st.metric(
+                    "Indicadores Institucionales", 
+                    f"{porc_completitud_inst:.1f}% Completados", 
+                    f"Total: {total_inst}",
+                    delta_color="off"
+                )
+                st.markdown(f"""
+                <div style="padding-left:10px;">
+                    <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_inst} ({porc_completitud_inst:.1f}%)<br>
+                    <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_inst} ({porc_proceso_inst:.1f}%)<br>
+                    <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_inst} ({porc_pendientes_inst:.1f}%)<br>
+                    <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_inst} ({porc_brecha_inst:.1f}%)
+                </div>
+                """, unsafe_allow_html=True)
+
+        with col2:
+            if not df_indicadores.empty:
+                st.metric(
+                    "Indicadores Territoriales", 
+                    f"{porc_completitud_terr:.1f}% Completados", 
+                    f"Total: {total_terr}",
+                    delta_color="off"
+                )
+                st.markdown(f"""
+                <div style="padding-left:10px;">
+                    <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_terr} ({porc_completitud_terr:.1f}%)<br>
+                    <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_terr} ({porc_proceso_terr:.1f}%)<br>
+                    <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_terr} ({porc_pendientes_terr:.1f}%)<br>
+                    <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_terr} ({porc_brecha_terr:.1f}%)
+                </div>
+                """, unsafe_allow_html=True)
+
+        with col3:
+            if not df_indicadores.empty:
+                st.metric(
+                    "Avance General", 
+                    f"{porc_completitud_global:.1f}% Completado", 
+                    f"Total: {total_global} Indicadores",
+                    delta_color="off"
+                )
+                st.markdown(f"""
+                <div style="padding-left:10px;">
+                    <span style="color:#0A5C99;font-weight:bold;">✓ Listos:</span> {completados_global} ({porc_completitud_global:.1f}%)<br>
+                    <span style="color:#1E88E5;font-weight:bold;">⟳ En Proceso:</span> {en_proceso_global} ({porc_proceso_global:.1f}%)<br>
+                    <span style="color:#FEC109;font-weight:bold;">⏱ Pendientes:</span> {pendientes_global} ({porc_pendientes_global:.1f}%)<br>
+                    <span style="color:#B19CD9;font-weight:bold;">⚠ Brecha:</span> {brecha_global} ({porc_brecha_global:.1f}%)
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Pestañas para diferentes análisis
+        tab1, tab2, tab3, tab4, tab5, tab6, tab7= st.tabs([
+            "Vista General", 
+            "Análisis por Dimensiones",
+            "Análisis de Estado Indicadores",
+            "Insights Adicionales",
+            "Mapa Geográfico",
+            "Mapa Sedes",
+            "Análisis de Archivos"
+        ])
+
+
+        # NOTA: Añadir treemap a la vista general 
+        # NOTA: Los graficos de vista general pasan a análisis por Tipo
+        # TAB 1: Vista General
+        with tab1:
+            st.markdown("""
+            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:20px;">
+            <h3>Descripción </h3>
+            <p>El proyecto busca potenciar la investigación aplicada y la innovación en la Universidad Tecnológica Metropolitana mediante un diagnóstico integral del territorio y de sus capacidades institucionales, identificando fortalezas y brechas en gestión, infraestructura, oferta académica y colaboración; a partir de este análisis, se plantea la creación de un centro interdisciplinario que impulse la transferencia tecnológica y establezca alianzas estratégicas entre la academia, la industria y el sector público, contribuyendo al desarrollo sostenible y competitivo de la Región Metropolitana.</p>
+            <h3>Objetivo del Fondo de Financiamiento Estructural de I+D+i (FIU) Territorial: </h3>
+            <p>Potenciar la contribución de universidades con acreditación entre 3 y 5 años al desarrollo territorial y los procesos de  descentralización, mediante el financiamiento de capacidades mínimas de I+D+i, incluyendo su respectiva gestión y gobernanza institucional.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            mostrar_tabla_comunas()
+
+            mostrar_treemap_dimensiones()
+            
+
+        with tab2:
+            st.header("Análisis por Dimensiones")
+        
+            # Mantén el código existente aquí...
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Selector para filtrar dimensiones
+                filtro_dim = st.radio(
+                    "Seleccionar categoría para dimensiones:",
+                    ["Global", "Institucional", "Territorial"],
+                    horizontal=True
+                )
+                filter_dim = None if filtro_dim == "Global" else filtro_dim.lower()
+                
+                # Gráfico de dimensiones
+                grafico_dim = crear_grafico_dimensiones(df, filter_dim)
+                if grafico_dim:
+                    st.plotly_chart(grafico_dim, use_container_width=True, key=f"dim_{filtro_dim}_chart")       
+                else:
+                    st.warning(f"No hay datos suficientes para mostrar dimensiones en la categoría {filtro_dim}")
+            
+            with col2:
+                st.markdown("""
+                <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:35px;">
+                <h4>¿Qué son las dimensiones?</h4>
+                <p>Las dimensiones representan áreas funcionales o temáticas dentro de las categorías principales.
+                Cada dimensión agrupa información relacionada con un aspecto específico de la gestión institucional
+                o territorial, facilitando la organización y recuperación de la información.</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Cargar el CSV de nombres de dimensiones
+                nombres_dimensiones = pd.read_csv("data/nombres_dimensiones.csv")
+                # Crear un diccionario para mapear id a nombre
+                dict_dimensiones = dict(zip(nombres_dimensiones['id_dim'], nombres_dimensiones['nombre_dim']))
+
+                # Mostrar estadísticas por dimensión
+                st.subheader("Estadísticas por Dimensión")
+
+                # Filtrar según selección
+                if filter_dim == 'institucional':
+                    df_stat = df[df['institucional'] == True]
+                elif filter_dim == 'territorial':
+                    df_stat = df[df['territorial'] == True]
+                else:
+                    df_stat = df
+                    
+                # Calcular estadísticas de dimensiones sin "Sin clasificación"
+                df_dims = df_stat[df_stat['dimensiones'] != 'Sin clasificación']
+
+                if not df_dims.empty:
+                    dim_stats = df_dims['dimensiones'].value_counts()
+                    
+                    # Crear DataFrame para las estadísticas
+                    data = []
+                    for dim in dim_stats.index:
+                        # Extraer el número de dimensión
+                        if isinstance(dim, str) and dim.startswith('Dimensión '):
+                            dim_num = int(dim.replace('Dimensión ', ''))
+                        else:
+                            dim_num = int(dim) if str(dim).isdigit() else 0
+                        
+                        # Obtener el nombre completo
+                        nombre_completo = dict_dimensiones.get(dim_num, "Sin nombre")
+                        
+                        data.append({
+                            'Número': dim_num,
+                            'Dimensión': dim, 
+                            'Nombre Dimensión': nombre_completo,
+                            'Total Archivos': dim_stats[dim],
+                            'Porcentaje': round(dim_stats[dim] / dim_stats.sum() * 100, 1)
+                        })
+                    
+                    # Crear DataFrame y ordenar por número de dimensión
+                    dim_df = pd.DataFrame(data)
+                    dim_df = dim_df.sort_values('Número')
+                    
+                    # Mostrar el DataFrame sin el índice y sin la columna de número
+                    st.dataframe(
+                        dim_df[['Dimensión', 'Nombre Dimensión', 'Total Archivos', 'Porcentaje']], 
+                        use_container_width=True,
+                        hide_index=True
+                    )
+                else:
+                    st.info("No hay datos de dimensiones disponibles para esta selección.")
+            
+            # Heatmap de extensiones por dimensión
+            st.subheader("Relación entre Tipos de Archivos y Dimensiones")
+            
+            heatmap = crear_heatmap_extension_dimension(df)
+            if heatmap:
+                st.plotly_chart(heatmap, use_container_width=True, key="heatmap_chart")
+            else:
+                st.warning("No hay suficientes datos para crear el mapa de calor.")
+            
+            st.markdown("""
+            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
+            <h4>¿Qué nos muestra este mapa de calor?</h4>
+            <p>Este mapa de calor muestra la concentración de diferentes tipos de archivos en cada dimensión, 
+            permitiendo identificar:</p>
+            <ul>
+                <li>Qué formatos son más utilizados en cada dimensión</li>
+                <li>Posibles patrones de uso específicos por área temática</li>
+                <li>Dimensiones con mayor diversidad o especialización en formatos</li>
+            </ul>
+            <p>Esta información puede ser útil para entender mejor los flujos de trabajo y necesidades de 
+            información en diferentes áreas de la organización.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # NOTA: Añadir metodología de trabajo
+        # TAB 4: Insights Adicionales
+        with tab3:
+            # Cargar datos de indicadores
+            df_indicadores = cargar_indicadores()
+            
+            # Si los datos se cargaron correctamente, mostrar el gráfico interactivo
+            if not df_indicadores.empty:
+                crear_grafico_estados_interactivo(df_indicadores)
+            else:
+                st.warning("No se pudieron cargar los datos de indicadores.")
+        with tab4:
+            st.header("Insights Adicionales")
+            
+            # Método de obtención (ejemplo)
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("Métodos de Obtención de Archivos")
+                st.plotly_chart(crear_grafico_metodos_obtencion(), use_container_width=True, key="metodos_obtencion_chart")
+            
+            with col2:
+                st.markdown("""
+                <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:35px;">
+                <h4>Fuentes de información</h4>
+                <p>Los archivos del Data Lake provienen de diferentes fuentes, lo que influye en su formato, 
+                estructura y calidad. Las principales fuentes son:</p>
+                <ul>
+                    <li><strong>Web Scraping:</strong> Datos extraídos automáticamente de sitios web</li>
+                    <li><strong>Universidad:</strong> Documentos generados internamente por la institución</li>
+                    <li><strong>Descargados:</strong> Archivos obtenidos de fuentes externas como portales oficiales</li>
+                </ul>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Análisis de tamaño de archivos
+            st.subheader("Tamaño de Archivos por Extensión")
+            
+            # Función para convertir tamaño a KB
+            def extraer_tamano_kb(tam_str):
+                try:
+                    if isinstance(tam_str, str):
+                        partes = tam_str.split()
+                        valor = float(partes[0])
+                        unidad = partes[1]
+                        
+                        if unidad == 'B':
+                            return valor / 1024
+                        elif unidad == 'KB':
+                            return valor
+                        elif unidad == 'MB':
+                            return valor * 1024
+                        elif unidad == 'GB':
+                            return valor * 1024 * 1024
+                        else:
+                            return 0
+                    else:
+                        return 0
+                except:
+                    return 0
+            
+            # Calcular tamaño en KB
+            df['tamano_kb'] = df['tamano'].apply(extraer_tamano_kb)
+            
+            # Agrupar por extensión
+            tamano_por_ext = df.groupby('extension')['tamano_kb'].agg(['mean', 'sum', 'count']).reset_index()
+            tamano_por_ext.columns = ['Extensión', 'Tamaño Promedio (KB)', 'Tamaño Total (KB)', 'Cantidad']
+            tamano_por_ext = tamano_por_ext.sort_values('Tamaño Total (KB)', ascending=False).head(10)
+            
+            # Redondear valores
+            tamano_por_ext['Tamaño Promedio (KB)'] = tamano_por_ext['Tamaño Promedio (KB)'].round(2)
+            tamano_por_ext['Tamaño Total (KB)'] = tamano_por_ext['Tamaño Total (KB)'].round(2)
+            
+            # Mostrar tabla
+            st.dataframe(tamano_por_ext, use_container_width=True)
+            
+            st.markdown("""
+            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
+            <h4>Conclusiones generales</h4>
+            <p>El análisis del Data Lake revela patrones importantes sobre cómo se almacena y organiza la 
+            información en la organización:</p>
+            <ul>
+                <li>La mayor parte de los archivos son de tipo <strong>hoja de cálculo</strong>, indicando un 
+                enfoque en análisis de datos cuantitativos</li>
+                <li>Existe una diferencia notable entre la cantidad de archivos <strong>institucionales</strong> 
+                versus <strong>territoriales</strong></li>
+                <li>Cada dimensión muestra preferencias específicas por ciertos formatos, reflejando sus 
+                necesidades particulares</li>
+            </ul>
+            <p>Esta información puede utilizarse para optimizar la gestión documental, mejorar los procesos 
+            de captura de datos y facilitar el acceso a la información relevante.</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        # NOTA: hablar del territorio 
+        # TAB 5: Mapa Geográfico
+        with tab5:
+            st.header("Mapa de la Región Metropolitana")
+            
+            # Puedes ajustar el tamaño del mapa según necesites
+            mapa_height = 600
+            
+            # Función para leer el archivo HTML
+            def cargar_html_mapa(ruta_html):
+                try:
+                    with open(ruta_html, 'r', encoding='utf-8') as f:
+                        html_content = f.read()
+                    return html_content
+                except FileNotFoundError:
+                    st.error(f"No se encontró el archivo HTML del mapa en: {ruta_html}")
+                    return None
+            
+            # Ruta a tu archivo HTML (ajusta según donde esté guardado)
+            ruta_mapa = "mapa_rm_final.html"
+            
+            # Cargar y mostrar el mapa
+            html_mapa = cargar_html_mapa(ruta_mapa)
+            if html_mapa:
+                st.markdown("Este mapa muestra las diferentes provincias y comunas de la Región Metropolitana.")
+                components.html(html_mapa, height=mapa_height)
+            else:
+                st.warning("No se pudo cargar el mapa. Verifica la ruta del archivo HTML.")
+                
+            # Agregar contexto sobre el mapa
+            st.markdown("""
+            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:20px;">
+            <h4>Acerca del mapa</h4>
+            <p>Este mapa interactivo muestra la distribución territorial de la Región Metropolitana de Santiago, 
+            con sus diferentes provincias identificadas por colores:</p>
+            <ul>
+                <li><strong>Santiago:</strong> Zona central y de mayor densidad de población</li>
+                <li><strong>Cordillera:</strong> Zona este, limítrofe con la cordillera de los Andes</li>
+                <li><strong>Chacabuco:</strong> Zona norte de la región</li>
+                <li><strong>Maipo:</strong> Zona sur</li>
+                <li><strong>Melipilla:</strong> Zona suroeste</li>
+                <li><strong>Talagante:</strong> Zona oeste</li>
+            </ul>
+            <p>Puedes interactuar con el mapa para ver información detallada de cada comuna.</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with tab6:
+            st.header("Mapa de la Región Metropolitana")
+            
+            # Puedes ajustar el tamaño del mapa según necesites
+            mapa_height = 600
+            
+            # Función para leer el archivo HTML
+            def cargar_html_mapa(ruta_html):
+                try:
+                    with open(ruta_html, 'r', encoding='utf-8') as f:
+                        html_content = f.read()
+                    return html_content
+                except FileNotFoundError:
+                    st.error(f"No se encontró el archivo HTML del mapa en: {ruta_html}")
+                    return None
+            
+            # Ruta a tu archivo HTML (ajusta según donde esté guardado)
+            ruta_mapa = "mapa_sedes_utem.html"
+            
+            # Cargar y mostrar el mapa
+            html_mapa = cargar_html_mapa(ruta_mapa)
+            if html_mapa:
+                st.markdown("Este mapa muestra las diferentes provincias y comunas de la Región Metropolitana.")
+                components.html(html_mapa, height=mapa_height)
+            else:
+                st.warning("No se pudo cargar el mapa. Verifica la ruta del archivo HTML.")
+
+        
+
+        with tab7:
+            
+            st.header("Análisis archivos")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.plotly_chart(crear_grafico_institucional_territorial(df), use_container_width=True, key="inst_terr_chart")
+                
+                st.markdown("""
+                <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
+                <h4>¿Qué nos muestra este gráfico?</h4>
+                <p>Este gráfico muestra la distribución de archivos entre las categorías <strong>Institucional</strong> 
+                y <strong>Territorial</strong>, permitiendo identificar rápidamente el balance entre estos dos tipos 
+                de información en el Data Lake.</p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with col2:
+                st.plotly_chart(crear_grafico_extensiones(df), use_container_width=True, key="ext_general_chart")
+                
+                st.markdown("""
+                <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
+                <h4>Tipos de archivos en el Data Lake</h4>
+                <p>La distribución de tipos de archivos nos permite entender qué formatos predominan en el repositorio,
+                lo que refleja los tipos de datos y documentos más utilizados en la organización.</p>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # Gráfico comparativo de extensiones por categoría
+            st.header("Comparación de Tipos de Archivos por Categoría")
+            st.plotly_chart(crear_grafico_comparativo_extensiones(df), use_container_width=True, key="ext_comp_chart")
+            
+            st.markdown("""
+            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
+            <h4>Diferencias entre categorías</h4>
+            <p>Esta comparación permite identificar si existen patrones o preferencias diferentes en el uso de formatos 
+            de archivos entre las áreas institucionales y territoriales. Esto puede reflejar diferentes necesidades
+            o flujos de trabajo específicos para cada categoría.</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+
+            st.header("Análisis Detallado por Tipo de Archivo")
+            
+            # Selector para filtrar por categoría
+            filtro_cat = st.radio(
+                "Seleccionar categoría:",
                 ["Global", "Institucional", "Territorial"],
                 horizontal=True
             )
-            filter_dim = None if filtro_dim == "Global" else filtro_dim.lower()
+            filtro = None if filtro_cat == "Global" else filtro_cat.lower()
             
-            # Gráfico de dimensiones
-            grafico_dim = crear_grafico_dimensiones(df, filter_dim)
-            if grafico_dim:
-                st.plotly_chart(grafico_dim, use_container_width=True, key=f"dim_{filtro_dim}_chart")       
-            else:
-                st.warning(f"No hay datos suficientes para mostrar dimensiones en la categoría {filtro_dim}")
-        
-        with col2:
-            st.markdown("""
-            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:35px;">
-            <h4>¿Qué son las dimensiones?</h4>
-            <p>Las dimensiones representan áreas funcionales o temáticas dentro de las categorías principales.
-            Cada dimensión agrupa información relacionada con un aspecto específico de la gestión institucional
-            o territorial, facilitando la organización y recuperación de la información.</p>
-            </div>
-            """, unsafe_allow_html=True)
+            # Gráfico de extensiones filtrado
+            st.plotly_chart(crear_grafico_extensiones(df, filtro), use_container_width=True, key=f"ext_{filtro_cat}_chart")
             
-            # Cargar el CSV de nombres de dimensiones
-            nombres_dimensiones = pd.read_csv("data/nombres_dimensiones.csv")
-            # Crear un diccionario para mapear id a nombre
-            dict_dimensiones = dict(zip(nombres_dimensiones['id_dim'], nombres_dimensiones['nombre_dim']))
-
-            # Mostrar estadísticas por dimensión
-            st.subheader("Estadísticas por Dimensión")
-
+            # Mostrar top extensiones con estadísticas
+            st.subheader(f"Top 5 Extensiones - {filtro_cat}")
+            
             # Filtrar según selección
-            if filter_dim == 'institucional':
-                df_stat = df[df['institucional'] == True]
-            elif filter_dim == 'territorial':
-                df_stat = df[df['territorial'] == True]
+            if filtro == 'institucional':
+                df_temp = df[df['institucional'] == True]
+            elif filtro == 'territorial':
+                df_temp = df[df['territorial'] == True]
             else:
-                df_stat = df
+                df_temp = df
                 
-            # Calcular estadísticas de dimensiones sin "Sin clasificación"
-            df_dims = df_stat[df_stat['dimensiones'] != 'Sin clasificación']
-
-            if not df_dims.empty:
-                dim_stats = df_dims['dimensiones'].value_counts()
-                
-                # Crear DataFrame para las estadísticas
-                data = []
-                for dim in dim_stats.index:
-                    # Extraer el número de dimensión
-                    if isinstance(dim, str) and dim.startswith('Dimensión '):
-                        dim_num = int(dim.replace('Dimensión ', ''))
-                    else:
-                        dim_num = int(dim) if str(dim).isdigit() else 0
-                    
-                    # Obtener el nombre completo
-                    nombre_completo = dict_dimensiones.get(dim_num, "Sin nombre")
-                    
-                    data.append({
-                        'Número': dim_num,
-                        'Dimensión': dim, 
-                        'Nombre Dimensión': nombre_completo,
-                        'Total Archivos': dim_stats[dim],
-                        'Porcentaje': round(dim_stats[dim] / dim_stats.sum() * 100, 1)
-                    })
-                
-                # Crear DataFrame y ordenar por número de dimensión
-                dim_df = pd.DataFrame(data)
-                dim_df = dim_df.sort_values('Número')
-                
-                # Mostrar el DataFrame sin el índice y sin la columna de número
-                st.dataframe(
-                    dim_df[['Dimensión', 'Nombre Dimensión', 'Total Archivos', 'Porcentaje']], 
-                    use_container_width=True,
-                    hide_index=True
-                )
-            else:
-                st.info("No hay datos de dimensiones disponibles para esta selección.")
-        
-        # Heatmap de extensiones por dimensión
-        st.subheader("Relación entre Tipos de Archivos y Dimensiones")
-        
-        heatmap = crear_heatmap_extension_dimension(df)
-        if heatmap:
-            st.plotly_chart(heatmap, use_container_width=True, key="heatmap_chart")
-        else:
-            st.warning("No hay suficientes datos para crear el mapa de calor.")
-        
-        st.markdown("""
-        <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
-        <h4>¿Qué nos muestra este mapa de calor?</h4>
-        <p>Este mapa de calor muestra la concentración de diferentes tipos de archivos en cada dimensión, 
-        permitiendo identificar:</p>
-        <ul>
-            <li>Qué formatos son más utilizados en cada dimensión</li>
-            <li>Posibles patrones de uso específicos por área temática</li>
-            <li>Dimensiones con mayor diversidad o especialización en formatos</li>
-        </ul>
-        <p>Esta información puede ser útil para entender mejor los flujos de trabajo y necesidades de 
-        información en diferentes áreas de la organización.</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    # NOTA: Añadir metodología de trabajo
-    # TAB 4: Insights Adicionales
-    with tab3:
-        # Cargar datos de indicadores
-        df_indicadores = cargar_indicadores()
-        
-        # Si los datos se cargaron correctamente, mostrar el gráfico interactivo
-        if not df_indicadores.empty:
-            crear_grafico_estados_interactivo(df_indicadores)
-        else:
-            st.warning("No se pudieron cargar los datos de indicadores.")
-    with tab4:
-        st.header("Insights Adicionales")
-        
-        # Método de obtención (ejemplo)
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Métodos de Obtención de Archivos")
-            st.plotly_chart(crear_grafico_metodos_obtencion(), use_container_width=True, key="metodos_obtencion_chart")
-        
-        with col2:
+            # Calcular estadísticas
+            top_ext = df_temp['extension'].value_counts().head(5)
+            top_ext_df = pd.DataFrame({
+                'Extensión': top_ext.index,
+                'Cantidad': top_ext.values,
+                'Porcentaje': (top_ext.values / len(df_temp) * 100).round(1)
+            })
+            
+            # Mostrar tabla
+            st.dataframe(top_ext_df, use_container_width=True)
+            
             st.markdown("""
-            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:35px;">
-            <h4>Fuentes de información</h4>
-            <p>Los archivos del Data Lake provienen de diferentes fuentes, lo que influye en su formato, 
-            estructura y calidad. Las principales fuentes son:</p>
+            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
+            <h4>Interpretación de los tipos de archivos</h4>
+            <p>Los diferentes tipos de archivos tienen propósitos específicos:</p>
             <ul>
-                <li><strong>Web Scraping:</strong> Datos extraídos automáticamente de sitios web</li>
-                <li><strong>Universidad:</strong> Documentos generados internamente por la institución</li>
-                <li><strong>Descargados:</strong> Archivos obtenidos de fuentes externas como portales oficiales</li>
+                <li><strong>.xlsx/.xls:</strong> Hojas de cálculo para análisis de datos, registros y reportes cuantitativos</li>
+                <li><strong>.pdf:</strong> Documentos formales, informes finales, documentación oficial</li>
+                <li><strong>.docx/.doc:</strong> Documentos de texto, informes en proceso, documentación detallada</li>
+                <li><strong>.pptx/.ppt:</strong> Presentaciones para reuniones y exposiciones</li>
+                <li><strong>.csv:</strong> Datos estructurados para análisis y procesamiento</li>
             </ul>
+            <p>La predominancia de ciertos formatos puede indicar el enfoque principal del trabajo en cada área.</p>
             </div>
             """, unsafe_allow_html=True)
-        
-        # Análisis de tamaño de archivos
-        st.subheader("Tamaño de Archivos por Extensión")
-        
-        # Función para convertir tamaño a KB
-        def extraer_tamano_kb(tam_str):
-            try:
-                if isinstance(tam_str, str):
-                    partes = tam_str.split()
-                    valor = float(partes[0])
-                    unidad = partes[1]
-                    
-                    if unidad == 'B':
-                        return valor / 1024
-                    elif unidad == 'KB':
-                        return valor
-                    elif unidad == 'MB':
-                        return valor * 1024
-                    elif unidad == 'GB':
-                        return valor * 1024 * 1024
-                    else:
-                        return 0
-                else:
-                    return 0
-            except:
-                return 0
-        
-        # Calcular tamaño en KB
-        df['tamano_kb'] = df['tamano'].apply(extraer_tamano_kb)
-        
-        # Agrupar por extensión
-        tamano_por_ext = df.groupby('extension')['tamano_kb'].agg(['mean', 'sum', 'count']).reset_index()
-        tamano_por_ext.columns = ['Extensión', 'Tamaño Promedio (KB)', 'Tamaño Total (KB)', 'Cantidad']
-        tamano_por_ext = tamano_por_ext.sort_values('Tamaño Total (KB)', ascending=False).head(10)
-        
-        # Redondear valores
-        tamano_por_ext['Tamaño Promedio (KB)'] = tamano_por_ext['Tamaño Promedio (KB)'].round(2)
-        tamano_por_ext['Tamaño Total (KB)'] = tamano_por_ext['Tamaño Total (KB)'].round(2)
-        
-        # Mostrar tabla
-        st.dataframe(tamano_por_ext, use_container_width=True)
-        
-        st.markdown("""
-        <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
-        <h4>Conclusiones generales</h4>
-        <p>El análisis del Data Lake revela patrones importantes sobre cómo se almacena y organiza la 
-        información en la organización:</p>
-        <ul>
-            <li>La mayor parte de los archivos son de tipo <strong>hoja de cálculo</strong>, indicando un 
-            enfoque en análisis de datos cuantitativos</li>
-            <li>Existe una diferencia notable entre la cantidad de archivos <strong>institucionales</strong> 
-            versus <strong>territoriales</strong></li>
-            <li>Cada dimensión muestra preferencias específicas por ciertos formatos, reflejando sus 
-            necesidades particulares</li>
-        </ul>
-        <p>Esta información puede utilizarse para optimizar la gestión documental, mejorar los procesos 
-        de captura de datos y facilitar el acceso a la información relevante.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # NOTA: hablar del territorio 
-    # TAB 5: Mapa Geográfico
-    with tab5:
-        st.header("Mapa de la Región Metropolitana")
-        
-        # Puedes ajustar el tamaño del mapa según necesites
-        mapa_height = 600
-        
-        # Función para leer el archivo HTML
-        def cargar_html_mapa(ruta_html):
-            try:
-                with open(ruta_html, 'r', encoding='utf-8') as f:
-                    html_content = f.read()
-                return html_content
-            except FileNotFoundError:
-                st.error(f"No se encontró el archivo HTML del mapa en: {ruta_html}")
-                return None
-        
-        # Ruta a tu archivo HTML (ajusta según donde esté guardado)
-        ruta_mapa = "mapa_rm_final.html"
-        
-        # Cargar y mostrar el mapa
-        html_mapa = cargar_html_mapa(ruta_mapa)
-        if html_mapa:
-            st.markdown("Este mapa muestra las diferentes provincias y comunas de la Región Metropolitana.")
-            components.html(html_mapa, height=mapa_height)
-        else:
-            st.warning("No se pudo cargar el mapa. Verifica la ruta del archivo HTML.")
-            
-        # Agregar contexto sobre el mapa
-        st.markdown("""
-        <div style="background-color:#f0f2f6; padding:15px; border-radius:10px; margin-top:20px;">
-        <h4>Acerca del mapa</h4>
-        <p>Este mapa interactivo muestra la distribución territorial de la Región Metropolitana de Santiago, 
-        con sus diferentes provincias identificadas por colores:</p>
-        <ul>
-            <li><strong>Santiago:</strong> Zona central y de mayor densidad de población</li>
-            <li><strong>Cordillera:</strong> Zona este, limítrofe con la cordillera de los Andes</li>
-            <li><strong>Chacabuco:</strong> Zona norte de la región</li>
-            <li><strong>Maipo:</strong> Zona sur</li>
-            <li><strong>Melipilla:</strong> Zona suroeste</li>
-            <li><strong>Talagante:</strong> Zona oeste</li>
-        </ul>
-        <p>Puedes interactuar con el mapa para ver información detallada de cada comuna.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with tab6:
-        st.header("Mapa de la Región Metropolitana")
-        
-        # Puedes ajustar el tamaño del mapa según necesites
-        mapa_height = 600
-        
-        # Función para leer el archivo HTML
-        def cargar_html_mapa(ruta_html):
-            try:
-                with open(ruta_html, 'r', encoding='utf-8') as f:
-                    html_content = f.read()
-                return html_content
-            except FileNotFoundError:
-                st.error(f"No se encontró el archivo HTML del mapa en: {ruta_html}")
-                return None
-        
-        # Ruta a tu archivo HTML (ajusta según donde esté guardado)
-        ruta_mapa = "mapa_sedes_utem.html"
-        
-        # Cargar y mostrar el mapa
-        html_mapa = cargar_html_mapa(ruta_mapa)
-        if html_mapa:
-            st.markdown("Este mapa muestra las diferentes provincias y comunas de la Región Metropolitana.")
-            components.html(html_mapa, height=mapa_height)
-        else:
-            st.warning("No se pudo cargar el mapa. Verifica la ruta del archivo HTML.")
-
-    
-
-    with tab7:
-        
-        st.header("Análisis archivos")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.plotly_chart(crear_grafico_institucional_territorial(df), use_container_width=True, key="inst_terr_chart")
-            
-            st.markdown("""
-            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
-            <h4>¿Qué nos muestra este gráfico?</h4>
-            <p>Este gráfico muestra la distribución de archivos entre las categorías <strong>Institucional</strong> 
-            y <strong>Territorial</strong>, permitiendo identificar rápidamente el balance entre estos dos tipos 
-            de información en el Data Lake.</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            st.plotly_chart(crear_grafico_extensiones(df), use_container_width=True, key="ext_general_chart")
-            
-            st.markdown("""
-            <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
-            <h4>Tipos de archivos en el Data Lake</h4>
-            <p>La distribución de tipos de archivos nos permite entender qué formatos predominan en el repositorio,
-            lo que refleja los tipos de datos y documentos más utilizados en la organización.</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        # Gráfico comparativo de extensiones por categoría
-        st.header("Comparación de Tipos de Archivos por Categoría")
-        st.plotly_chart(crear_grafico_comparativo_extensiones(df), use_container_width=True, key="ext_comp_chart")
-        
-        st.markdown("""
-        <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
-        <h4>Diferencias entre categorías</h4>
-        <p>Esta comparación permite identificar si existen patrones o preferencias diferentes en el uso de formatos 
-        de archivos entre las áreas institucionales y territoriales. Esto puede reflejar diferentes necesidades
-        o flujos de trabajo específicos para cada categoría.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-
-        st.header("Análisis Detallado por Tipo de Archivo")
-        
-        # Selector para filtrar por categoría
-        filtro_cat = st.radio(
-            "Seleccionar categoría:",
-            ["Global", "Institucional", "Territorial"],
-            horizontal=True
-        )
-        filtro = None if filtro_cat == "Global" else filtro_cat.lower()
-        
-        # Gráfico de extensiones filtrado
-        st.plotly_chart(crear_grafico_extensiones(df, filtro), use_container_width=True, key=f"ext_{filtro_cat}_chart")
-        
-        # Mostrar top extensiones con estadísticas
-        st.subheader(f"Top 5 Extensiones - {filtro_cat}")
-        
-        # Filtrar según selección
-        if filtro == 'institucional':
-            df_temp = df[df['institucional'] == True]
-        elif filtro == 'territorial':
-            df_temp = df[df['territorial'] == True]
-        else:
-            df_temp = df
-            
-        # Calcular estadísticas
-        top_ext = df_temp['extension'].value_counts().head(5)
-        top_ext_df = pd.DataFrame({
-            'Extensión': top_ext.index,
-            'Cantidad': top_ext.values,
-            'Porcentaje': (top_ext.values / len(df_temp) * 100).round(1)
-        })
-        
-        # Mostrar tabla
-        st.dataframe(top_ext_df, use_container_width=True)
-        
-        st.markdown("""
-        <div style="background-color:#f0f2f6; padding:15px; border-radius:10px;">
-        <h4>Interpretación de los tipos de archivos</h4>
-        <p>Los diferentes tipos de archivos tienen propósitos específicos:</p>
-        <ul>
-            <li><strong>.xlsx/.xls:</strong> Hojas de cálculo para análisis de datos, registros y reportes cuantitativos</li>
-            <li><strong>.pdf:</strong> Documentos formales, informes finales, documentación oficial</li>
-            <li><strong>.docx/.doc:</strong> Documentos de texto, informes en proceso, documentación detallada</li>
-            <li><strong>.pptx/.ppt:</strong> Presentaciones para reuniones y exposiciones</li>
-            <li><strong>.csv:</strong> Datos estructurados para análisis y procesamiento</li>
-        </ul>
-        <p>La predominancia de ciertos formatos puede indicar el enfoque principal del trabajo en cada área.</p>
-        </div>
-        """, unsafe_allow_html=True)
 
 # Ejecutar la aplicación
 if __name__ == "__main__":
