@@ -659,7 +659,7 @@ def mostrar_treemap_dimensiones():
             use_container_width=True,
             hide_index=True
         )
-                # Generar leyenda adicional para los números de indicadores
+        # Generar leyenda adicional para los números de indicadores
         st.subheader("Avance de indicadores territoriales")
         st.dataframe(
             duckdb.sql("select id_indicador as 'ID', dimension as 'Dimension', indicador as 'Indicador', estado as 'Estado' from df_treemap where origen='Territorial'").to_df(),
@@ -672,26 +672,65 @@ def mostrar_treemap_dimensiones():
         st.error(f"Error al crear el treemap: {str(e)}")
         st.write("Estructura de los datos:", df_combined.head())
 
-def mostrar_treemap_dimension_e():
+def filtrar_por_dimension(institucional_df, territorial_df, dimension):
+    # Diccionario de letras a números
+    letra_a_numero = {chr(i + 96): i for i in range(1, 8)}  # 'a'->1, 'b'->2, ..., 'g'->7
+
+    # Validar y convertir la dimensión
+    if isinstance(dimension, str) and dimension.isdigit():
+        numero_dimension = int(dimension)
+        # Filtrar el DataFrame
+        filtro = f"Dimensión {numero_dimension}"
+        territorial_df = territorial_df[territorial_df["Dimension"].str.startswith(filtro)]
+        return territorial_df
+        
+    elif isinstance(dimension, str) and dimension.lower() in letra_a_numero:
+        numero_dimension = letra_a_numero[dimension.lower()]
+        # Filtrar el DataFrame
+        filtro = f"Dimensión {numero_dimension}"
+        institucional_df = institucional_df[institucional_df["Dimension"].str.startswith(filtro)]
+        return institucional_df
+        
+    else:
+        raise ValueError("Parámetro inválido. Debe ser un número del 1 al 7 o una letra entre 'a' y 'g'.")
+    
+def mostrar_treemap_dimension_queryparams(dimension):
+    # print(dimension)
     st.subheader("Treemap de dimensiones e indicadores")
     
+    # Verificar archivos disponibles y mostrar información de depuración
     archivos_disp = [f for f in os.listdir('data') if f.endswith('.csv')]
     
+    # Cargar los dataframes
     df_treemap=pd.read_csv("data/indicadores_actualizado_20250528.csv", sep='^')
+    # Dimension,Indicador
     institucional_df = duckdb.sql("select dimension as 'Dimension', indicador as 'Indicador' from df_treemap where origen='Institucional'").to_df()
-    print(institucional_df.head())
+    territorial_df = duckdb.sql("select dimension as 'Dimension', indicador as 'Indicador' from df_treemap where origen='Territorial'").to_df()
+
+    # Verificar si se cargaron los datos
     if institucional_df is None:
         st.error("Error al cargar los datos")
         return
     
+    # Crear una nueva columna con números de índice
     institucional_df = institucional_df.reset_index(drop=True)
+    territorial_df = territorial_df.reset_index(drop=True)
+    
+    # Agregar números usando enumerate para evitar problemas con índices
     institucional_df['Indicador_Numerado'] = [f"I_{i+1}: {ind}" for i, ind in enumerate(institucional_df['Indicador'])]
+    territorial_df['Indicador_Numerado'] = [f"T_{i+1}: {ind}" for i, ind in enumerate(territorial_df['Indicador'])]
+    
+    # Preparar los datos
     institucional_df['Valor'] = 10
     institucional_df['Categoria'] = 'Institucional'
-    institucional_df = institucional_df[institucional_df["Dimension"].str.startswith("Dimensión 5")]
-
-    df_combined = pd.concat([institucional_df], ignore_index=True)
+    territorial_df['Valor'] = 10
+    territorial_df['Categoria'] = 'Territorial'
     
+    # Combinar ambos dataframes
+    df_filtrado = filtrar_por_dimension(institucional_df, territorial_df, dimension)
+    df_combined = pd.concat([df_filtrado], ignore_index=True)
+
+    # Verificar que tenemos las columnas necesarias
     columnas_requeridas = ['Categoria', 'Dimension', 'Indicador_Numerado', 'Valor']
     columnas_faltantes = [col for col in columnas_requeridas if col not in df_combined.columns]
     
@@ -700,6 +739,7 @@ def mostrar_treemap_dimension_e():
         st.write("Columnas disponibles:", df_combined.columns.tolist())
         return
     
+    # Crear un treemap con la paleta de colores personalizada
     try:
         fig = px.treemap(
             df_combined,
@@ -712,19 +752,23 @@ def mostrar_treemap_dimension_e():
             }
         )
         
+        # Actualizar trazas para que el texto sea más grande
         fig.update_traces(
             textfont=dict(size=24),  # Aumentar tamaño de fuente significativamente
             texttemplate='%{label}',
             hovertemplate='<b>%{label}</b><br>Categoría: %{root}<br>Dimensión: %{parent}'
         )
         
+        # Ajustar los márgenes y altura
         fig.update_layout(
             margin=dict(t=50, l=25, r=25, b=25),
             height=900,  # Aumentar altura para mejor visualización
             template='plotly_white'
         )
         
+        # Mostrar el treemap
         st.plotly_chart(fig, use_container_width=True)
+        # Generar leyenda adicional para los números de indicadores
         st.subheader("Avance de indicadores institucionales")
         st.dataframe(
             duckdb.sql("select id_indicador as 'ID', dimension as 'Dimension', indicador as 'Indicador', estado as 'Estado' from df_treemap where origen='Institucional'").to_df(),
@@ -760,10 +804,7 @@ def mostrar_tabla_comunas():
 
 def main():
     if st.query_params:
-        '''
-        Este espacio es para cargar las vistas de streamlit como iframe en el DataWarehouse
-        '''
-        if st.query_params['dimension'] == 'e':
+        if st.query_params['dimension']:
 
             tab1, tab2, tab3, tab4, tab5, tab6, tab7= st.tabs([
                 "Vista General", 
@@ -776,12 +817,9 @@ def main():
             ])
             
             with tab1:
-                mostrar_treemap_dimension_e()
+                mostrar_treemap_dimension_queryparams(st.query_params['dimension'])
             
     else:      
-        '''
-        Este espacio es para cargar el DataLake completo
-        '''
         # Aplicar estilo CSS personalizado para centrar imágenes en columnas
         st.markdown("""
         <style>
