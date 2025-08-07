@@ -697,6 +697,21 @@ def filtrar_por_dimension(institucional_df, territorial_df, dimension):
     else:
         raise ValueError("Parámetro inválido. Debe ser un número del 1 al 7 o una letra entre 'a' y 'g'.")
 
+def grafico_i_20():
+    with open("graph/I_20/experiencias_internacionales_facultades.html", "r", encoding="utf-8") as f:
+        html_content = f.read()
+    st.components.v1.html(html_content, height=600, scrolling=True)
+
+def grafico_i_21():
+    with open("21.html", "r", encoding="utf-8") as f:
+        html_content = f.read()
+    st.components.v1.html(html_content, height=600, scrolling=True)
+
+def grafico_i_22():
+    with open("22.html", "r", encoding="utf-8") as f:
+        html_content = f.read()
+    st.components.v1.html(html_content, height=600, scrolling=True)
+    
 def grafico_i_23():   
     # Parámetros de conexión
     connection_params = {
@@ -1296,13 +1311,19 @@ def main():
             
             with tab1:
                 mostrar_treemap_dimension_queryparams(st.query_params['dimension'])
-            if st.query_params.get('indicador') == 'i_23_procesado':
+            if st.query_params.get('indicador') == 'i_20':
+                grafico_i_20()
+            if st.query_params.get('indicador') == 'i_21':
+                grafico_i_21()
+            if st.query_params.get('indicador') == 'i_22':
+                grafico_i_22()
+            elif st.query_params.get('indicador') == 'i_23_procesado':
                 grafico_i_23()
             elif st.query_params.get('indicador') == 'i_24':
                 grafico_i_24()
             elif st.query_params.get('indicador') == 't_4':
                 grafico_t_4()
-            elif st.query_params.get('indicador') == 't_7':
+            elif st.query_params.get('indicador') == 't_7_b':
                 grafico_t_7()
         elif 'forms' in st.query_params and st.query_params['forms'] == 'True':
             forms()

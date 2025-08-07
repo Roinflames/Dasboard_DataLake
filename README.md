@@ -1,6 +1,7 @@
 # dashboard_fiut_test
 dashboard_fiut_test
 
+pipenv shell
 streamlit run streamlit_dashboard.py  
 
 ps aux | grep streamlit
