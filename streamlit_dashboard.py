@@ -703,7 +703,7 @@ def grafico_i_20():
     st.components.v1.html(html_content, height=600, scrolling=True)
 
 def grafico_i_21():
-    with open("21.html", "r", encoding="utf-8") as f:
+    with open("graph/I_21/distribucion_tipos_programa.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     st.components.v1.html(html_content, height=600, scrolling=True)
 
