@@ -698,7 +698,7 @@ def filtrar_por_dimension(institucional_df, territorial_df, dimension):
         raise ValueError("Parámetro inválido. Debe ser un número del 1 al 7 o una letra entre 'a' y 'g'.")
 
 def grafico_i_20():
-    with open("graph/I_20/experiencias_internacionales_facultades.html", "r", encoding="utf-8") as f:
+    with open("graph/I_20/experiencias_internacionales_anual.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     st.components.v1.html(html_content, height=600, scrolling=True)
 
@@ -817,6 +817,11 @@ def grafico_i_23():
     fig = crear_grafico_paises(df)
     st.plotly_chart(fig, use_container_width=True)
 
+def grafico_i_24():
+    with open("graph/I_24/sanki.html", "r", encoding="utf-8") as f:
+        html_content = f.read()
+    st.components.v1.html(html_content, height=600, scrolling=True)
+
 def grafico_t_4():
     with open("graph/T_4/chile_energia_renovable_categoria.html", "r", encoding="utf-8") as f:
         html_content = f.read()
@@ -849,11 +854,6 @@ def grafico_t_7():
         html_content = f.read()
     st.components.v1.html(html_content, height=600, scrolling=True)
     with open("graph/T_7/contaminantes_rm_vehiculos.html", "r", encoding="utf-8") as f:
-        html_content = f.read()
-    st.components.v1.html(html_content, height=600, scrolling=True)
-
-def grafico_i_24():
-    with open("sanki.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     st.components.v1.html(html_content, height=600, scrolling=True)
 
@@ -1317,7 +1317,7 @@ def main():
                 grafico_i_21()
             if st.query_params.get('indicador') == 'i_22':
                 grafico_i_22()
-            elif st.query_params.get('indicador') == 'i_23_procesado':
+            elif st.query_params.get('indicador') == 'i_23_crudo':
                 grafico_i_23()
             elif st.query_params.get('indicador') == 'i_24':
                 grafico_i_24()
