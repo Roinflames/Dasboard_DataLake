@@ -842,11 +842,16 @@ def grafico_t_4():
     with open("graph/T_4/chile_energia_renovable_tipos.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     st.components.v1.html(html_content, height=600, scrolling=True)
-    
-def grafico_t_7():
+
+def grafico_t_6():
     with open("graph/T_7/contaminantes_rm_evolucion_anual.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     st.components.v1.html(html_content, height=600, scrolling=True)
+    
+def grafico_t_7():
+    # with open("graph/T_7/contaminantes_rm_evolucion_anual.html", "r", encoding="utf-8") as f:
+    #     html_content = f.read()
+    # st.components.v1.html(html_content, height=600, scrolling=True)
     with open("graph/T_7/contaminantes_rm_mapa_comunas.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     st.components.v1.html(html_content, height=600, scrolling=True)
@@ -1323,6 +1328,8 @@ def main():
                 grafico_i_24()
             elif st.query_params.get('indicador') == 't_4':
                 grafico_t_4()
+            elif st.query_params.get('indicador') == 't_6':
+                grafico_t_6()
             elif st.query_params.get('indicador') == 't_7_b':
                 grafico_t_7()
         elif 'forms' in st.query_params and st.query_params['forms'] == 'True':
